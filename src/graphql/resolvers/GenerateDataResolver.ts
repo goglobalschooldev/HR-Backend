@@ -1,19 +1,7 @@
 import mongoose from "mongoose";
 import Employee from "../../models/Employee"
 import { currentDate } from "../../fn/currentDate";
-import wrokingtimes from '../../db/wrokingtimes.json';
-import employees from '../../db/employees.json';
-import idcard from '../../db/idcard.json';
-import employeewarnings from '../../db/employeewarnings.json';
-import affair from '../../db/affair.json';
-import sections from '../../db/sections.json';
-import positions from '../../db/positions.json';
-import contractTypes from '../../db/contractTypes.json';
-import evaluations from '../../db/evaluations.json';
-import shifts from '../../db/shifts.json';
-
 import { Affair, Office, Position, Section, WrokingTime } from "../../models/Branch";
-import offices from '../../db/offices.json';
 import EmployeeWarning from "../../models/EmployeeWarning";
 import EmployeePublicHoliday from "../../models/EmployeePublicHoliday";
 import { ContactType } from "../../models/Contract";
