@@ -24,10 +24,8 @@ const MobileResolver = {
                     return new Error(auchCheck.message);
                 }
                 const getAtt = await Attendance_1.default.find({
-                    $and: [
-                        { employeeId: new mongoose_1.default.Types.ObjectId(auchCheck?.user?.user_id?.toString()) },
-                    ]
-                }).limit(limit).populate([
+                    employeeId: new mongoose_1.default.Types.ObjectId(auchCheck?.user?.user_id?.toString())
+                }).sort({ attendanceDate: -1 }).limit(limit).populate([
                     {
                         path: 'employeeId',
                         populate: [{ path: 'branch' }]
@@ -35,15 +33,15 @@ const MobileResolver = {
                 ]);
                 const data = getAtt.map((data) => {
                     const attendances = {
-                        morning: `Morning :${data?.morningShift?.attendance}`,
-                        afternoon: `Afternoon :${data?.afternoonShift?.attendance}`
+                        morning: data?.morningShift?.attendance,
+                        afternoon: data?.afternoonShift?.attendance
                     };
                     return {
-                        _id: data?.employeeId?._id,
+                        _id: data?._id,
                         date: data?.attendanceDate,
-                        latinName: data?.employeeId?.latinName,
-                        morning: `${data?.morningShift?.checkIn}-${data?.morningShift?.checkOut}`,
-                        afternoon: `${data?.afternoonShift?.checkIn}-${data?.afternoonShift?.checkOut}`,
+                        lanitnName: data?.employeeId?.latinName,
+                        morning: `${data?.morningShift?.checkIn} - ${data?.morningShift?.checkOut}`,
+                        afternoon: `${data?.afternoonShift?.checkIn} - ${data?.afternoonShift?.checkOut}`,
                         attendances,
                         fine: data?.morningShift?.fine + data?.afternoonShift?.fine,
                         branch: data?.employeeId?.branch?.branchName
