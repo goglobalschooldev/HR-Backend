@@ -8,7 +8,6 @@ import { ContactType } from "../../models/Contract";
 import { Evaluation } from "../../models/Evaluation";
 import Shift from "../../models/Shift";
 // import att from '../../db/att.json';
-import employees from '../../db/employees.json';
 import Attendance from "../../models/Attendance";
 const generate = {
     Query: {
@@ -16,12 +15,12 @@ const generate = {
             try {
                 // branchs da new ✅
                 // employees(id cared) ✅
-                employees.map(async (emp: any) => {
-                    const dob = currentDate(emp?.date_of_birth)
-                    await Employee.findByIdAndUpdate(emp?._id?.$oid, {
-                        dob: new Date(dob)
+                // employees.map(async (emp: any) => {
+                //     const dob = currentDate(emp?.date_of_birth)
+                //     await Employee.findByIdAndUpdate(emp?._id?.$oid, {
+                //         dob: new Date(dob)
 
-                    })
+                //     })
                     // await new Employee({
                     //     _id: emp?._id?.$oid,
                     //     nationalId: emp?.national_id,
@@ -45,7 +44,7 @@ const generate = {
                     //     workBook: emp?.work_book,
                     //     role: emp?.adminRole
                     // }).save()
-                })
+                // })
                 // id card  ✅
 
                 // idcard.map(async (idcard: any) => {
