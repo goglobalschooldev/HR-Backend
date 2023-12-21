@@ -84,7 +84,7 @@ const attendanceResolver = {
                         fromQuery,
                         toQuery
                     ]
-                }).limit(limit).populate([
+                }).sort({ attendanceDate: -1 }).limit(limit).populate([
                     {
                         path: 'employeeId',
                         populate: [{ path: 'branch' }]
@@ -92,12 +92,13 @@ const attendanceResolver = {
                 ]);
 
                 const data = getAtt.map((data: iAttendance) => {
+                    // console.log(data?.afternoonShift);
                     const attendances = {
                         morning: data?.morningShift?.attendance,
                         afternoon: data?.afternoonShift?.attendance
                     }
                     return {
-                        _id: data?.employeeId?._id,
+                        _id: data?._id,
                         date: data?.attendanceDate,
                         lanitnName: data?.employeeId?.latinName,
                         morning: `${data?.morningShift?.checkIn} - ${data?.morningShift?.checkOut}`,

@@ -22,8 +22,8 @@ const ShiftResolver = {
                 }
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
-
                 const getPH = await EmployeePublicHoliday.find({ employeeId: auchCheck?.user?.user_id, year: currentYear.toString() }).populate("title");
+               
                 const data = getPH.map((ph: any) => {
                     return {
                         _id: ph?._id,
