@@ -14,11 +14,11 @@ import { countTotalArray } from '../../fn/countTotalArray';
 import moment from 'moment';
 import { iShift } from '../../interface/iShift';
 import Notification from '../../models/Notification';
+
 const MobileResolver = {
     Query: {
         getAttendanceMobile: async (_root: undefined, { limit }: { limit: number }, { req }: { req: express.Request }) => {
             try {
-
                 const auchCheck = await AuchCheck(req)
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
@@ -85,11 +85,12 @@ const MobileResolver = {
                 const geShifts = await Shift.find({
                     from: { $gte: new Date(currentDate()) },
                     approveStatus: "approve"
-                }).populate("timeOff requestBy cancelBy approveBy")
+                }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy")
                 const data = geShifts.map((data) => {
                     let from = moment(data?.from).format('DD');
                     let t = moment(data?.to).format('DD');
                     let to = moment(data?.to).format('DD MMM YY');
+                    const cuDate = moment(data?.from).format('DD MMM YY');
                     return {
                         _id: data?._id,
                         profileImage: data?.requestBy?.profileImage,
@@ -198,8 +199,7 @@ const MobileResolver = {
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
                 }
-
-                const getShifts = await Shift.find({ requestBy: new mongoose.Types.ObjectId(auchCheck?.user?.user_id?.toString()) }).limit(limit)
+                const getShifts = await Shift.find({ requestBy: new mongoose.Types.ObjectId(auchCheck?.user?.user_id?.toString()) }).sort({ createdAt: -1 }).limit(limit)
                 const data = getShifts.map((shift: iShift) => {
                     let from = moment(shift?.from).format('DD');
                     let to = moment(shift?.to).format('DD MMM YY');

@@ -21,6 +21,7 @@ const attendanceResolver = {
                     limit: limit || 10,
                     customLabels: paginationLabel_1.paginationLabel,
                     pagination: true,
+                    sort: { createdAt: -1 },
                     populate: [
                         {
                             path: 'employeeId',
@@ -111,18 +112,46 @@ const attendanceResolver = {
                 return error;
             }
         },
-        getDailyAttendanceReport: async (_root, { date }) => {
+        getDailyAttendanceReport: async (_root, { date, shift }) => {
             try {
-                const getAttendances = await Attendance_1.default.find({ attendanceDate: new Date(date) }).populate("employeeId");
+                const shiftQuery = shift === "Morning" ? {
+                    $match: {
+                        "morningShift.attendance": {
+                            $ne: "Presence"
+                        }
+                    }
+                } : {
+                    $match: {
+                        "afternoonShift.attendance": {
+                            $ne: "Presence"
+                        }
+                    }
+                };
+                const getAttendances = await Attendance_1.default.aggregate([
+                    { $match: { attendanceDate: new Date(date) } },
+                    shiftQuery,
+                    {
+                        $lookup: {
+                            from: "employees",
+                            localField: "employeeId",
+                            foreignField: "_id",
+                            as: "employeeId",
+                        },
+                    },
+                    {
+                        $unwind: { path: "$employeeId" },
+                    },
+                ]);
                 const datas = getAttendances.map((attendance) => {
+                    const fineMorning = attendance?.morningShift?.fine ? attendance?.morningShift?.fine : 0;
+                    const fineAfternoon = attendance?.afternoonShift?.fine ? attendance?.afternoonShift?.fine : 0;
                     return {
                         _id: attendance?._id,
                         profileImage: attendance?.employeeId?.profileImage,
                         latinName: attendance?.employeeId?.latinName,
-                        morning: attendance?.morningShift?.attendance,
-                        afternoon: attendance?.afternoonShift?.attendance,
-                        fine: attendance?.morningShift?.fine + attendance?.afternoonShift?.fine,
-                        reason: attendance?.morningShift?.reason.length === 0 ? attendance?.afternoonShift?.reason : attendance?.morningShift?.reason
+                        fine: shift === "Morning" ? fineMorning : fineAfternoon,
+                        attendance: shift === "Morning" ? attendance?.morningShift?.attendance : attendance?.afternoonShift?.attendance,
+                        reason: shift === "Morning" ? attendance?.morningShift?.reason : attendance?.afternoonShift?.reason
                     };
                 });
                 return datas;

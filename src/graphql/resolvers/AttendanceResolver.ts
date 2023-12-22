@@ -16,11 +16,13 @@ const attendanceResolver = {
             { page, limit, keyword, branchId, date }:
                 { page: number, limit: number, keyword: string, branchId: string, date: string }) => {
             try {
+
                 const options = {
                     page: page || 1,
                     limit: limit || 10,
                     customLabels: paginationLabel,
                     pagination: true,
+                    sort: { createdAt: -1 },
                     populate: [
                         {
                             path: 'employeeId',
@@ -28,6 +30,7 @@ const attendanceResolver = {
                         },
                     ]
                 };
+
                 const branchIdQuery = branchId === "All" ? {} : { branch: new mongoose.Types.ObjectId(branchId) }
                 const getEmployees = await Employee.find({
                     $and: [
@@ -113,20 +116,52 @@ const attendanceResolver = {
                 return error
             }
         },
-        getDailyAttendanceReport: async (_root: undefined, { date }: { date: string }) => {
+        getDailyAttendanceReport: async (_root: undefined, { date, shift }: { date: string, shift: string }) => {
             try {
-                const getAttendances = await Attendance.find({ attendanceDate: new Date(date) }).populate("employeeId");
+
+                const shiftQuery = shift === "Morning" ? {
+                    $match: {
+                        "morningShift.attendance": {
+                            $ne: "Presence"
+                        }
+                    }
+                } : {
+                    $match: {
+                        "afternoonShift.attendance": {
+                            $ne: "Presence"
+                        }
+                    }
+                };
+
+                const getAttendances = await Attendance.aggregate([
+                    { $match: { attendanceDate: new Date(date) } },
+                    shiftQuery,
+                    {
+                        $lookup: {
+                            from: "employees",
+                            localField: "employeeId",
+                            foreignField: "_id",
+                            as: "employeeId",
+                        },
+                    },
+                    {
+                        $unwind: { path: "$employeeId" },
+                    },
+                ]);
+
                 const datas = getAttendances.map((attendance: iAttendance) => {
+                    const fineMorning = attendance?.morningShift?.fine ? attendance?.morningShift?.fine : 0;
+                    const fineAfternoon = attendance?.afternoonShift?.fine ? attendance?.afternoonShift?.fine : 0;
                     return {
                         _id: attendance?._id,
                         profileImage: attendance?.employeeId?.profileImage,
                         latinName: attendance?.employeeId?.latinName,
-                        morning: attendance?.morningShift?.attendance,
-                        afternoon: attendance?.afternoonShift?.attendance,
-                        fine: attendance?.morningShift?.fine + attendance?.afternoonShift?.fine,
-                        reason: attendance?.morningShift?.reason.length === 0 ? attendance?.afternoonShift?.reason : attendance?.morningShift?.reason
+                        fine: shift === "Morning" ? fineMorning : fineAfternoon,
+                        attendance: shift === "Morning" ? attendance?.morningShift?.attendance : attendance?.afternoonShift?.attendance,
+                        reason: shift === "Morning" ? attendance?.morningShift?.reason : attendance?.afternoonShift?.reason
                     }
                 });
+
                 return datas;
             } catch (error) {
                 return error

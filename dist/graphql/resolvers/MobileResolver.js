@@ -83,11 +83,12 @@ const MobileResolver = {
                 const geShifts = await Shift_1.default.find({
                     from: { $gte: new Date((0, currentDate_1.currentDate)()) },
                     approveStatus: "approve"
-                }).populate("timeOff requestBy cancelBy approveBy");
+                }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy");
                 const data = geShifts.map((data) => {
                     let from = (0, moment_1.default)(data?.from).format('DD');
                     let t = (0, moment_1.default)(data?.to).format('DD');
                     let to = (0, moment_1.default)(data?.to).format('DD MMM YY');
+                    const cuDate = (0, moment_1.default)(data?.from).format('DD MMM YY');
                     return {
                         _id: data?._id,
                         profileImage: data?.requestBy?.profileImage,
@@ -189,7 +190,7 @@ const MobileResolver = {
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
                 }
-                const getShifts = await Shift_1.default.find({ requestBy: new mongoose_1.default.Types.ObjectId(auchCheck?.user?.user_id?.toString()) }).limit(limit);
+                const getShifts = await Shift_1.default.find({ requestBy: new mongoose_1.default.Types.ObjectId(auchCheck?.user?.user_id?.toString()) }).sort({ createdAt: -1 }).limit(limit);
                 const data = getShifts.map((shift) => {
                     let from = (0, moment_1.default)(shift?.from).format('DD');
                     let to = (0, moment_1.default)(shift?.to).format('DD MMM YY');
