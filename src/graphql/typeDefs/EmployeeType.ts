@@ -15,6 +15,7 @@ const EmployeeType = `#graphql
         nationality: String
         tell: String
         email: String
+        type: String
         currentAddress: String
         branch: String
         branchId: ID

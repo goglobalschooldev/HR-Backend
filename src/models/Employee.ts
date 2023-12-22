@@ -16,6 +16,7 @@ const EmployeeSchema = new Schema<iEmployee>({
     placeOfBirth: String,
     nationality: String,
     tell: String,
+    type: String,
     email: String,
     currentAddress: String,
     idCard: Schema.Types.ObjectId,

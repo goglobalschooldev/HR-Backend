@@ -23,6 +23,7 @@ export interface iEmployee {
     marital: string;
     workBook: Boolean;
     role: string;
+    type: string;
     createdAt: Date;
 }
 export interface iEmployeePublicHoliday {

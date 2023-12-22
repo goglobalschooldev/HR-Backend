@@ -4,7 +4,6 @@ const DataGenerate = `#graphql
 
     type Query {
         generateData: Message!
-    }
-   
+    } 
 `;
 exports.default = DataGenerate;

@@ -8,7 +8,7 @@ import { ContactType } from "../../models/Contract";
 import { Evaluation } from "../../models/Evaluation";
 import Shift from "../../models/Shift";
 // import att from '../../db/att.json';
-// import shifts from '../../db/shifts.json';
+// import employees from '../../db/employees.json';
 import Attendance from "../../models/Attendance";
 const generate = {
     Query: {
@@ -18,34 +18,33 @@ const generate = {
                 // branchs da new ✅
                 // employees(id cared) ✅
                 // employees.map(async (emp: any) => {
-                //     const dob = currentDate(emp?.date_of_birth)
                 //     await Employee.findByIdAndUpdate(emp?._id?.$oid, {
-                //         dob: new Date(dob)
+                //         type: emp?.type
 
                 //     })
-                // await new Employee({
-                //     _id: emp?._id?.$oid,
-                //     nationalId: emp?.national_id,
-                //     employeeId: emp?.employee_id,
-                //     firstName: emp?.khmer_name?.first_name,
-                //     lastName: emp?.khmer_name?.last_name,
-                //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
-                //     gender: emp?.gender,
-                //     profileImage: emp?.image?.src,
-                //     joinDate: emp?.join_date?.$date,
-                //     dob: emp?.date_of_birth?.$date,
-                //     placeOfBirth: emp?.place_of_birth,
-                //     nationality: emp?.nationality,
-                //     tell: emp?.phone,
-                //     email: emp?.email,
-                //     currentAddress: emp?.current_address,
-                //     // idCard: Schema.Types.ObjectId,
-                //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
-                //     workingStatus: emp?.working_status,
-                //     marital: emp?.marital,
-                //     workBook: emp?.work_book,
-                //     role: emp?.adminRole
-                // }).save()
+                    // await new Employee({
+                    //     _id: emp?._id?.$oid,
+                    //     nationalId: emp?.national_id,
+                    //     employeeId: emp?.employee_id,
+                    //     firstName: emp?.khmer_name?.first_name,
+                    //     lastName: emp?.khmer_name?.last_name,
+                    //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
+                    //     gender: emp?.gender,
+                    //     profileImage: emp?.image?.src,
+                    //     joinDate: emp?.join_date?.$date,
+                    //     dob: emp?.date_of_birth?.$date,
+                    //     placeOfBirth: emp?.place_of_birth,
+                    //     nationality: emp?.nationality,
+                    //     tell: emp?.phone,
+                    //     email: emp?.email,
+                    //     currentAddress: emp?.current_address,
+                    //     // idCard: Schema.Types.ObjectId,
+                    //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
+                    //     workingStatus: emp?.working_status,
+                    //     marital: emp?.marital,
+                    //     workBook: emp?.work_book,
+                    //     role: emp?.adminRole
+                    // }).save()
                 // })
                 // id card  ✅
 

@@ -19,6 +19,7 @@ const EmployeeSchema = new mongoose_1.Schema({
     placeOfBirth: String,
     nationality: String,
     tell: String,
+    type: String,
     email: String,
     currentAddress: String,
     idCard: mongoose_1.Schema.Types.ObjectId,
