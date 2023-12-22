@@ -26,6 +26,14 @@ const EmployeeType = `#graphql
         latinName: String
         profileImage: String
     }
+    type EmployeeInfo {
+        _id: ID
+        latinName: String
+        firstName: String
+        lastName: String
+        profileImage: String
+        email: String
+    }
     type EmployeeWarning {
         _id: ID
         date: String
@@ -83,10 +91,13 @@ const EmployeeType = `#graphql
     type Query {
         getEmployeesPagination(page: Int!, limit: Int!, keyword: String!, workingStatus: String!): EmployeePagination!
         getEmployeeWorkingTime(employeeId: ID!): [WrokingTime]!
-        getEmployeesForSelect: [EmployeeSelect]!
         getEmployeeById(_id: ID!): Employee!
         getEmployeeWarning(employeeId: ID!): [EmployeeWarning]!
-        getPublicHolidayByEmployee(employeeId: ID!):[PublicHolidayByEmployee]!
+        getPublicHolidayByEmployee(employeeId: ID!): [PublicHolidayByEmployee]!
+
+        getEmployeeInfo(employeeId: ID!): EmployeeInfo!
+        getEmployeesForSelect: [EmployeeSelect]!
+        getEmployeesForUserPagination(page: Int!, limit: Int!, keyword: String!, _id: [String]): EmployeePagination!
     }
     type Mutation {
         createEmployee(input: CreateEmployeeInput!): Message!

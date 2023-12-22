@@ -107,7 +107,74 @@ const EmployeeResolver = {
             } catch (error) {
                 return error
             }
-        }
+        },
+        getEmployeeInfo: async (_root: undefined, { employeeId }: { employeeId: string }) => {
+            try {
+                const getEmployee = await Employee.findById(employeeId);
+                return getEmployee;
+            } catch (error) {
+                return error
+            }
+        },
+        getEmployeesForUserPagination: async (_root: undefined, { page, limit, keyword, _id }: { page: number, limit: number, keyword: string, _id: string }) => {
+            try {
+                const options = {
+                    page: page || 1,
+                    limit: limit || 10,
+                    customLabels: paginationLabel,
+                    pagination: true,
+                    populate: "branch"
+                };
+                const _idQuery = _id.length === 0 ? {} : { _id: { $in: _id } }
+                const query = {
+                    $and: [
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ['$lastName', ' ', '$firstName', '$latinName'] },
+                                    regex: keyword,
+                                    options: 'i',
+                                }
+                            }
+                        },
+                        _idQuery
+                    ]
+                };
+
+                const getEmployees: any = await Employee.paginate(query, options);
+                const datas = getEmployees.data.map((data: iEmployee) => {
+                    return {
+                        _id: data?._id,
+                        nationalId: data?.nationalId,
+                        employeeId: data?.employeeId,
+                        firstName: data?.firstName,
+                        lastName: data?.lastName,
+                        latinName: data?.latinName,
+                        gender: data?.gender,
+                        profileImage: data?.profileImage,
+                        joinDate: data?.joinDate,
+                        dob: data?.dob,
+                        workingStatus: data?.workingStatus,
+                        placeOfBirth: data?.placeOfBirth,
+                        nationality: data?.nationality,
+                        tell: data?.tell,
+                        email: data?.email,
+                        currentAddress: data?.currentAddress,
+                        branch: data?.branch?.branchName,
+                        branchId: data?.branch?._id,
+                        marital: data?.marital,
+                        workBook: data?.workBook
+                    }
+                });
+
+                return {
+                    data: datas,
+                    paginator: getEmployees?.paginator
+                }
+            } catch (error) {
+                return error
+            }
+        },
     },
     Mutation: {
         createEmployee: async (_root: undefined, { input }: { input: iEmployee }) => {

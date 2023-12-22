@@ -8,11 +8,13 @@ import { ContactType } from "../../models/Contract";
 import { Evaluation } from "../../models/Evaluation";
 import Shift from "../../models/Shift";
 // import att from '../../db/att.json';
+// import shifts from '../../db/shifts.json';
 import Attendance from "../../models/Attendance";
 const generate = {
     Query: {
         generateData: async (_root: undefined) => {
             try {
+
                 // branchs da new ✅
                 // employees(id cared) ✅
                 // employees.map(async (emp: any) => {
@@ -21,29 +23,29 @@ const generate = {
                 //         dob: new Date(dob)
 
                 //     })
-                    // await new Employee({
-                    //     _id: emp?._id?.$oid,
-                    //     nationalId: emp?.national_id,
-                    //     employeeId: emp?.employee_id,
-                    //     firstName: emp?.khmer_name?.first_name,
-                    //     lastName: emp?.khmer_name?.last_name,
-                    //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
-                    //     gender: emp?.gender,
-                    //     profileImage: emp?.image?.src,
-                    //     joinDate: emp?.join_date?.$date,
-                    //     dob: emp?.date_of_birth?.$date,
-                    //     placeOfBirth: emp?.place_of_birth,
-                    //     nationality: emp?.nationality,
-                    //     tell: emp?.phone,
-                    //     email: emp?.email,
-                    //     currentAddress: emp?.current_address,
-                    //     // idCard: Schema.Types.ObjectId,
-                    //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
-                    //     workingStatus: emp?.working_status,
-                    //     marital: emp?.marital,
-                    //     workBook: emp?.work_book,
-                    //     role: emp?.adminRole
-                    // }).save()
+                // await new Employee({
+                //     _id: emp?._id?.$oid,
+                //     nationalId: emp?.national_id,
+                //     employeeId: emp?.employee_id,
+                //     firstName: emp?.khmer_name?.first_name,
+                //     lastName: emp?.khmer_name?.last_name,
+                //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
+                //     gender: emp?.gender,
+                //     profileImage: emp?.image?.src,
+                //     joinDate: emp?.join_date?.$date,
+                //     dob: emp?.date_of_birth?.$date,
+                //     placeOfBirth: emp?.place_of_birth,
+                //     nationality: emp?.nationality,
+                //     tell: emp?.phone,
+                //     email: emp?.email,
+                //     currentAddress: emp?.current_address,
+                //     // idCard: Schema.Types.ObjectId,
+                //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
+                //     workingStatus: emp?.working_status,
+                //     marital: emp?.marital,
+                //     workBook: emp?.work_book,
+                //     role: emp?.adminRole
+                // }).save()
                 // })
                 // id card  ✅
 
@@ -126,19 +128,20 @@ const generate = {
                 // attendances
                 // shifts
                 // shifts.map(async (aff: any) => {
-                //         await new Shift({
-                //             from: aff?.from?.$date,
-                //             to: aff?.from?.$to,
-                //             shiftOff: aff?.shiftOfff,
-                //             reason: aff?.reason,
-                //             timeOff: new mongoose.Types.ObjectId("657d742389c7458cc2f5f4de"),
-                //             requestBy: aff?.request_by?.$oid,
-                //             approveBy: new mongoose.Types.ObjectId("634f9edb28216566b493618d") ,
-                //             approveStatus: aff,
-                //             hrComment: aff?.hrComment,
-                //             // requestAt: aff,
-                //         }).save()
-                //     })
+                //     // console.log(aff?.shiftOfff);
+                //     await new Shift({
+                //         from: aff?.from?.$date,
+                //         to: aff?.to?.$date,
+                //         shiftOff: aff?.shiftOfff?.$oid,
+                //         reason: aff?.reason,
+                //         timeOff: new mongoose.Types.ObjectId("657d742389c7458cc2f5f4de"),
+                //         requestBy: aff?.request_by?.$oid,
+                //         approveBy: new mongoose.Types.ObjectId("634f9edb28216566b493618d"),
+                //         approveStatus: aff?.approve_status,
+                //         hrComment: aff?.hrComment,
+                //         // requestAt: aff,
+                //     }).save()
+                // })
                 // evaluates ✅ 
                 // evaluations.map(async (aff: any) => {
                 //     await new Evaluation({
