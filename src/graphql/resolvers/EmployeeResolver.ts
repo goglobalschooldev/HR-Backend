@@ -90,6 +90,14 @@ const EmployeeResolver = {
                 return error
             }
         },
+        getEmployeeByIdCard: async (_root: undefined, { _idCard }: { _idCard: string }) => {
+            try {
+                const getEmployee = await Employee.findOne({ idCard: new mongoose.Types.ObjectId(_idCard) });
+                return getEmployee;
+            } catch (error) {
+                return error
+            }
+        },
         getPublicHolidayByEmployee: async (_root: undefined, { employeeId }: { employeeId: string }) => {
             try {
                 const employees = await EmployeePublicHoliday.find({ employeeId }).populate("title")

@@ -90,7 +90,6 @@ const MobileResolver = {
                     let from = moment(data?.from).format('DD');
                     let t = moment(data?.to).format('DD');
                     let to = moment(data?.to).format('DD MMM YY');
-                    const cuDate = moment(data?.from).format('DD MMM YY');
                     return {
                         _id: data?._id,
                         profileImage: data?.requestBy?.profileImage,
