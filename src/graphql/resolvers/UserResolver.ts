@@ -109,10 +109,10 @@ const userResolver = {
         },
         mobileLogin: async (_root: undefined, { email, password }: { email: string, password: string }) => {
             try {
-                const login = await AuthAdmin.login(email, password)
+                const login = await AuthAdmin.login(email, password);
                 if (login?.status) {
                     const getUserData = await Employee.findById(login?.user?.user_id);
-
+                    console.log(getUserData);
                     if (getUserData && getUserData?.workingStatus === "working") {
                         return {
                             user: getUserData,

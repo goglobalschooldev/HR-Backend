@@ -112,6 +112,25 @@ const attendanceResolver = {
             } catch (error) {
                 return error
             }
+        },
+        getDailyAttendanceReport: async (_root: undefined, { date }: { date: string }) => {
+            try {
+                const getAttendances = await Attendance.find({ attendanceDate: new Date(date) }).populate("employeeId");
+                const datas = getAttendances.map((attendance: iAttendance) => {
+                    return {
+                        _id: attendance?._id,
+                        profileImage: attendance?.employeeId?.profileImage,
+                        latinName: attendance?.employeeId?.latinName,
+                        morning: attendance?.morningShift?.attendance,
+                        afternoon: attendance?.afternoonShift?.attendance,
+                        fine: attendance?.morningShift?.fine + attendance?.afternoonShift?.fine,
+                        reason: attendance?.morningShift?.reason.length === 0 ? attendance?.afternoonShift?.reason : attendance?.morningShift?.reason
+                    }
+                });
+                return datas;
+            } catch (error) {
+                return error
+            }
         }
     },
     Mutation: {

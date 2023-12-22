@@ -43,9 +43,20 @@ const AttendanceType = `#graphql
       checkOut: String
       remark: String
     }
+    type DailyAttendance{
+      _id: String
+      profileImage: String
+      latinName: String
+      morning: String
+      afternoon: String
+      fine: Float
+      reason: String
+    }
     type Query {
       getAttendancePagination(page: Int!, limit: Int!, keyword: String!, branchId: ID!,  date: String!): AttendancePagination!
       getEmployeeAttendance(employeeId: String!, from: String!, to: String!, limit: Int!): [Attendance]!
+
+      getDailyAttendanceReport(date: Date!): [DailyAttendance]!
     }
     type Mutation {
         employeeCheckAttendance(longitude: String!, latitude: String!, shift: AllowShift!, scan: AllowScanAction!): Message!

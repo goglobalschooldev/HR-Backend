@@ -98,6 +98,7 @@ const EmployeeType = `#graphql
         getEmployeeInfo(employeeId: ID!): EmployeeInfo!
         getEmployeesForSelect: [EmployeeSelect]!
         getEmployeesForUserPagination(page: Int!, limit: Int!, keyword: String!, _id: [String]): EmployeePagination!
+        getEmployees(keyword: String!): [EmployeeInfo]!
     }
     type Mutation {
         createEmployee(input: CreateEmployeeInput!): Message!

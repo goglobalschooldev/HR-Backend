@@ -182,6 +182,23 @@ const EmployeeResolver = {
                 return error;
             }
         },
+        getEmployees: async (_root, { keyword }) => {
+            try {
+                const getEmployees = await Employee_1.default.find({
+                    $expr: {
+                        $regexMatch: {
+                            input: { $concat: ['$lastName', ' ', '$firstName', '$latinName'] },
+                            regex: keyword,
+                            options: 'i',
+                        }
+                    }
+                });
+                return getEmployees;
+            }
+            catch (error) {
+                return error;
+            }
+        },
     },
     Mutation: {
         createEmployee: async (_root, { input }) => {
