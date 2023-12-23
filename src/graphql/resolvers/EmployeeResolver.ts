@@ -208,11 +208,11 @@ const EmployeeResolver = {
         createEmployee: async (_root: undefined, { input }: { input: iEmployee }) => {
             try {
                 const _id = new mongoose.Types.ObjectId();
-                const addUser = await AuthAdmin.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, input?.role)
+                const addUser = await AuthAdmin.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, "")
 
                 if (addUser?.status) {
                     const add = await new Employee({
-                        _id: new mongoose.Types.ObjectId(),
+                        _id,
                         ...input
                     }).save()
                     return MessageRespone(true)

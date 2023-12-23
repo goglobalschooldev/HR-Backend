@@ -214,10 +214,10 @@ const EmployeeResolver = {
         createEmployee: async (_root, { input }) => {
             try {
                 const _id = new mongoose_1.default.Types.ObjectId();
-                const addUser = await AuthAdmin_1.default.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, input?.role);
+                const addUser = await AuthAdmin_1.default.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, "");
                 if (addUser?.status) {
                     const add = await new Employee_1.default({
-                        _id: new mongoose_1.default.Types.ObjectId(),
+                        _id,
                         ...input
                     }).save();
                     return (0, MessageRespone_1.default)(true);
