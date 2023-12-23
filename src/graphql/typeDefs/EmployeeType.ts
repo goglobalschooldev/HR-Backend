@@ -26,6 +26,8 @@ const EmployeeType = `#graphql
         _id: ID
         latinName: String
         profileImage: String
+        firstName: String
+        lastName: String
     }
     type EmployeeInfo {
         _id: ID
