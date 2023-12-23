@@ -43,7 +43,7 @@ const DashboardResolver = {
                     totalEmployee: totalEmp.length,
                     totalResign: totalresign.length,
                     todayLate: totalLAte / 2,
-                    todayPermision: totalPermission / 2,
+                    todayPermision: totalPermission / 2
                 };
             }
             catch (error) {

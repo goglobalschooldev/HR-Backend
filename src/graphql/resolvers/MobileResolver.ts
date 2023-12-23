@@ -230,7 +230,7 @@ const MobileResolver = {
             } catch (error) {
                 return error
             }
-        },
+        }
     }
 }
 

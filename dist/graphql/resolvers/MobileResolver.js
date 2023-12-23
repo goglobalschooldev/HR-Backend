@@ -219,7 +219,7 @@ const MobileResolver = {
             catch (error) {
                 return error;
             }
-        },
+        }
     }
 };
 exports.default = MobileResolver;

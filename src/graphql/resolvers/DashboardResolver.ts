@@ -1,10 +1,9 @@
-import mongoose from "mongoose";
 import Attendance from "../../models/Attendance";
 import Employee from "../../models/Employee";
 import { currentDate } from "../../fn/currentDate";
 
 const DashboardResolver = {
-    Query: { 
+    Query: {
         getDashboardInfo: async (_root: undefined, { }: {}) => {
             try {
 
@@ -44,7 +43,7 @@ const DashboardResolver = {
                     totalEmployee: totalEmp.length,
                     totalResign: totalresign.length,
                     todayLate: totalLAte / 2,
-                    todayPermision: totalPermission / 2,
+                    todayPermision: totalPermission / 2
                 }
             } catch (error) {
                 return error

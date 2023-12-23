@@ -10,7 +10,6 @@ const MobileUserToken_1 = __importDefault(require("../models/MobileUserToken"));
 const expoNotificationSender = async (notifById, title, body, navigetId, type) => {
     const getToken = await MobileUserToken_1.default.find({ user: { $in: notifById } });
     const tokens = getToken.map((token) => token.token);
-    console.log(title, body);
     dotenv_1.default.config();
     let expo = new expo_server_sdk_1.Expo();
     let messages = [];
