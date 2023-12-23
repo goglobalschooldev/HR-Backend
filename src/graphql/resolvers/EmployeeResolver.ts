@@ -1,10 +1,11 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import MessageRespone from "../../fn/MessageRespone";
 import { paginationLabel } from "../../fn/paginationLabel";
 import { iEmployee } from "../../interface/iEmployee";
 import { WrokingTime } from "../../models/Branch";
 import Employee from "../../models/Employee";
 import EmployeePublicHoliday from "../../models/EmployeePublicHoliday";
+import AuthAdmin from "../../auth/AuthAdmin";
 
 const EmployeeResolver = {
     Query: {
@@ -201,20 +202,25 @@ const EmployeeResolver = {
             } catch (error) {
                 return error
             }
-        },
+        }
     },
     Mutation: {
         createEmployee: async (_root: undefined, { input }: { input: iEmployee }) => {
             try {
-                const add = await new Employee({
-                    _id: new mongoose.Types.ObjectId(),
-                    ...input
-                }).save()
-                console.log(add);
-                if (add) {
+                const _id = new mongoose.Types.ObjectId();
+                const addUser = await AuthAdmin.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, input?.role)
+
+                if (addUser?.status) {
+                    const add = await new Employee({
+                        _id: new mongoose.Types.ObjectId(),
+                        ...input
+                    }).save()
                     return MessageRespone(true)
                 } else {
-                    return MessageRespone(false)
+                    return {
+                        message: addUser?.message,
+                        status: addUser?.status
+                    }
                 }
             } catch (error) {
                 return error
@@ -222,11 +228,16 @@ const EmployeeResolver = {
         },
         updateEmployee: async (_root: undefined, { _id, input }: { _id: string, input: iEmployee }) => {
             try {
-                const udpate = await Employee.findByIdAndUpdate(_id, input).exec()
-                if (udpate) {
+                const updateEmail = await AuthAdmin.updateEmail(input.email, _id)
+
+                if (updateEmail?.status) {
+                    const udpate = await Employee.findByIdAndUpdate(_id, input).exec()
                     return MessageRespone(true)
                 } else {
-                    return MessageRespone(false)
+                    return {
+                        message: updateEmail?.message,
+                        status: updateEmail?.status
+                    }
                 }
             } catch (error) {
                 return error
@@ -234,11 +245,16 @@ const EmployeeResolver = {
         },
         deleteEmployee: async (_root: undefined, { _id }: { _id: string }) => {
             try {
-                const deleteData = await Employee.findByIdAndDelete(_id).exec()
-                if (deleteData) {
+                const delerUser = await AuthAdmin.delete(_id)
+
+                if (delerUser?.status) {
+                    const deleteData = await Employee.findByIdAndDelete(_id).exec()
                     return MessageRespone(true)
                 } else {
-                    return MessageRespone(false)
+                    return {
+                        message: delerUser?.message,
+                        status: delerUser?.status
+                    }
                 }
             } catch (error) {
                 return error
@@ -339,4 +355,5 @@ const EmployeeResolver = {
         },
     }
 }
+
 export default EmployeeResolver;

@@ -9,6 +9,7 @@ const paginationLabel_1 = require("../../fn/paginationLabel");
 const Branch_1 = require("../../models/Branch");
 const Employee_1 = __importDefault(require("../../models/Employee"));
 const EmployeePublicHoliday_1 = __importDefault(require("../../models/EmployeePublicHoliday"));
+const AuthAdmin_1 = __importDefault(require("../../auth/AuthAdmin"));
 const EmployeeResolver = {
     Query: {
         getEmployeesPagination: async (_root, { page, limit, keyword, workingStatus }) => {
@@ -207,21 +208,25 @@ const EmployeeResolver = {
             catch (error) {
                 return error;
             }
-        },
+        }
     },
     Mutation: {
         createEmployee: async (_root, { input }) => {
             try {
-                const add = await new Employee_1.default({
-                    _id: new mongoose_1.default.Types.ObjectId(),
-                    ...input
-                }).save();
-                console.log(add);
-                if (add) {
+                const _id = new mongoose_1.default.Types.ObjectId();
+                const addUser = await AuthAdmin_1.default.createUser(_id.toString(), input?.email, "Goglobal@2023", input?.firstName, input?.lastName, input?.role);
+                if (addUser?.status) {
+                    const add = await new Employee_1.default({
+                        _id: new mongoose_1.default.Types.ObjectId(),
+                        ...input
+                    }).save();
                     return (0, MessageRespone_1.default)(true);
                 }
                 else {
-                    return (0, MessageRespone_1.default)(false);
+                    return {
+                        message: addUser?.message,
+                        status: addUser?.status
+                    };
                 }
             }
             catch (error) {
@@ -230,12 +235,16 @@ const EmployeeResolver = {
         },
         updateEmployee: async (_root, { _id, input }) => {
             try {
-                const udpate = await Employee_1.default.findByIdAndUpdate(_id, input).exec();
-                if (udpate) {
+                const updateEmail = await AuthAdmin_1.default.updateEmail(input.email, _id);
+                if (updateEmail?.status) {
+                    const udpate = await Employee_1.default.findByIdAndUpdate(_id, input).exec();
                     return (0, MessageRespone_1.default)(true);
                 }
                 else {
-                    return (0, MessageRespone_1.default)(false);
+                    return {
+                        message: updateEmail?.message,
+                        status: updateEmail?.status
+                    };
                 }
             }
             catch (error) {
@@ -244,12 +253,16 @@ const EmployeeResolver = {
         },
         deleteEmployee: async (_root, { _id }) => {
             try {
-                const deleteData = await Employee_1.default.findByIdAndDelete(_id).exec();
-                if (deleteData) {
+                const delerUser = await AuthAdmin_1.default.delete(_id);
+                if (delerUser?.status) {
+                    const deleteData = await Employee_1.default.findByIdAndDelete(_id).exec();
                     return (0, MessageRespone_1.default)(true);
                 }
                 else {
-                    return (0, MessageRespone_1.default)(false);
+                    return {
+                        message: delerUser?.message,
+                        status: delerUser?.status
+                    };
                 }
             }
             catch (error) {
