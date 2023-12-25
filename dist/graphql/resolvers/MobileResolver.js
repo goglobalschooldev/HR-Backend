@@ -85,15 +85,16 @@ const MobileResolver = {
                     approveStatus: "approve"
                 }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy");
                 const data = geShifts.map((data) => {
-                    let from = (0, moment_1.default)(data?.from).format('DD');
+                    let f = (0, moment_1.default)(data?.from).format('DD');
                     let t = (0, moment_1.default)(data?.to).format('DD');
                     let to = (0, moment_1.default)(data?.to).format('DD MMM YY');
+                    let from = (0, moment_1.default)(data?.to).format('DD MMM YY');
                     return {
                         _id: data?._id,
                         profileImage: data?.requestBy?.profileImage,
                         latinName: data?.requestBy?.latinName,
                         reason: data?.reason,
-                        dateLeave: from === t ? "Only Today" : from + "-" + to
+                        dateLeave: f === t ? from : f + "-" + to
                     };
                 });
                 return data;
