@@ -45,7 +45,8 @@ const ShiftResolver = {
                     limit: limit || 10,
                     customLabels: paginationLabel,
                     pagination: true,
-                    populate: "timeOff requestBy cancelBy approveBy"
+                    populate: "timeOff requestBy cancelBy approveBy",
+                    sort: { createdAt: -1 }
                 };
 
                 const fromQuery = from.length === 0 ? {} : {
@@ -75,7 +76,6 @@ const ShiftResolver = {
 
                 const getShift: any = await Shift.paginate(query, options);
                 const data = getShift?.data?.map((data: iShift) => {
-                    console.log(data?.shiftOff);
                     return {
                         _id: data?._id,
                         from: data?.from,

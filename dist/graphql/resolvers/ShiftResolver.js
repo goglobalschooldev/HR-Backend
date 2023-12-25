@@ -44,7 +44,8 @@ const ShiftResolver = {
                     limit: limit || 10,
                     customLabels: paginationLabel_1.paginationLabel,
                     pagination: true,
-                    populate: "timeOff requestBy cancelBy approveBy"
+                    populate: "timeOff requestBy cancelBy approveBy",
+                    sort: { createdAt: -1 }
                 };
                 const fromQuery = from.length === 0 ? {} : {
                     from: { $gte: new Date(from) }
@@ -70,7 +71,6 @@ const ShiftResolver = {
                 };
                 const getShift = await Shift_1.default.paginate(query, options);
                 const data = getShift?.data?.map((data) => {
-                    console.log(data?.shiftOff);
                     return {
                         _id: data?._id,
                         from: data?.from,
