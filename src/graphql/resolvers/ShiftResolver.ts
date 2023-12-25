@@ -23,7 +23,7 @@ const ShiftResolver = {
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const getPH = await EmployeePublicHoliday.find({ employeeId: auchCheck?.user?.user_id, year: currentYear.toString() }).populate("title");
-               
+
                 const data = getPH.map((ph: any) => {
                     return {
                         _id: ph?._id,
@@ -75,13 +75,13 @@ const ShiftResolver = {
 
                 const getShift: any = await Shift.paginate(query, options);
                 const data = getShift?.data?.map((data: iShift) => {
-
+                    console.log(data?.shiftOff);
                     return {
                         _id: data?._id,
                         from: data?.from,
                         to: data?.to,
                         reason: data?.reason,
-                        timeOff: data?.timeOff,
+                        timeOff: data?.shiftOff,
                         requestBy: data?.requestBy?.latinName,
                         approveBy: data?.approveBy?.latinName,
                         cancelBy: data?.cancelBy?.latinName,

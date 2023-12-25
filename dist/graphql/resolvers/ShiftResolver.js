@@ -70,12 +70,13 @@ const ShiftResolver = {
                 };
                 const getShift = await Shift_1.default.paginate(query, options);
                 const data = getShift?.data?.map((data) => {
+                    console.log(data?.shiftOff);
                     return {
                         _id: data?._id,
                         from: data?.from,
                         to: data?.to,
                         reason: data?.reason,
-                        timeOff: data?.timeOff,
+                        timeOff: data?.shiftOff,
                         requestBy: data?.requestBy?.latinName,
                         approveBy: data?.approveBy?.latinName,
                         cancelBy: data?.cancelBy?.latinName,
