@@ -85,7 +85,7 @@ const MobileResolver = {
                 const geShifts = await Shift.find({
                     from: { $gte: new Date(currentDate()) },
                     approveStatus: "approve"
-                }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy")
+                }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy");
                 const data = geShifts.map((data) => {
                     let f = moment(data?.from).format('DD');
                     let t = moment(data?.to).format('DD');
