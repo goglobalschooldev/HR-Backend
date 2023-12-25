@@ -120,7 +120,6 @@ const userResolver = {
                 const login = await AuthAdmin_1.default.login(email, password);
                 if (login?.status) {
                     const getUserData = await Employee_1.default.findById(login?.user?.user_id);
-                    console.log(getUserData);
                     if (getUserData && getUserData?.workingStatus === "working") {
                         return {
                             user: getUserData,

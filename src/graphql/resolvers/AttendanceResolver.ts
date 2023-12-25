@@ -9,6 +9,9 @@ import { paginationLabel } from "../../fn/paginationLabel";
 import mongoose from "mongoose";
 import { iAttendance, iAttendanceInput } from "../../interface/iAttendance";
 import MessageRespone from "../../fn/MessageRespone";
+import { WrokingTime } from "../../models/Branch";
+import { iWrokingTime } from "../../interface/iBranch";
+import { iEmployee } from "../../interface/iEmployee";
 
 const attendanceResolver = {
     Query: {
@@ -95,7 +98,6 @@ const attendanceResolver = {
                 ]);
 
                 const data = getAtt.map((data: iAttendance) => {
-                    // console.log(data?.afternoonShift);
                     const attendances = {
                         morning: data?.morningShift?.attendance,
                         afternoon: data?.afternoonShift?.attendance
@@ -118,51 +120,44 @@ const attendanceResolver = {
         },
         getDailyAttendanceReport: async (_root: undefined, { date, shift }: { date: string, shift: string }) => {
             try {
+                const WorkingTimeShift = shift === "Morning" ? { shiftName: "Morning" } : { shiftName: "Afternoon" }
+                const getCheckWorkingTime = await WrokingTime.find(WorkingTimeShift)
+                const WorkingTimeEmployeeId = getCheckWorkingTime.map((workingTime: iWrokingTime) => workingTime?.employeeId);
 
-                const shiftQuery = shift === "Morning" ? {
-                    $match: {
-                        "morningShift.attendance": {
-                            $ne: "Presence"
-                        }
-                    }
-                } : {
-                    $match: {
-                        "afternoonShift.attendance": {
-                            $ne: "Presence"
-                        }
-                    }
-                };
 
-                const getAttendances = await Attendance.aggregate([
-                    { $match: { attendanceDate: new Date(date) } },
-                    shiftQuery,
-                    {
-                        $lookup: {
-                            from: "employees",
-                            localField: "employeeId",
-                            foreignField: "_id",
-                            as: "employeeId",
-                        },
-                    },
-                    {
-                        $unwind: { path: "$employeeId" },
-                    },
+                const getEmployees = await Employee.aggregate([
+                    { $match: { _id: { $in: WorkingTimeEmployeeId } } },
+                    { $match: { workingStatus: "working" } },
                 ]);
 
-                const datas = getAttendances.map((attendance: iAttendance) => {
-                    const fineMorning = attendance?.morningShift?.fine ? attendance?.morningShift?.fine : 0;
-                    const fineAfternoon = attendance?.afternoonShift?.fine ? attendance?.afternoonShift?.fine : 0;
-                    return {
-                        _id: attendance?._id,
-                        profileImage: attendance?.employeeId?.profileImage,
-                        latinName: attendance?.employeeId?.latinName,
-                        fine: shift === "Morning" ? fineMorning : fineAfternoon,
-                        attendance: shift === "Morning" ? attendance?.morningShift?.attendance : attendance?.afternoonShift?.attendance,
-                        reason: shift === "Morning" ? attendance?.morningShift?.reason : attendance?.afternoonShift?.reason
-                    }
-                });
-
-                return datas;
+                const datas = await Promise.all(
+                    getEmployees.map(async (employee: iEmployee) => {
+                        const getAttendance = await Attendance.findOne({
+                            $and: [
+                                {
+                                    attendanceDate: new Date(date)
+                                },
+                                {
+                                    employeeId: employee?._id
+                                }
+                            ]
+                        })
+                        const presence = getAttendance?.morningShift?.attendance === "Presence" || getAttendance?.afternoonShift?.attendance === "Presence" ? true : false
+                        const morningAttendance = getAttendance?.morningShift?.attendance ? getAttendance?.morningShift?.attendance : "Absence"
+                        const afternoonAttendance = getAttendance?.afternoonShift?.attendance ? getAttendance?.afternoonShift?.attendance : "Absence"
+                        return {
+                            _id: employee?._id,
+                            profileImage: employee?.profileImage,
+                            latinName: employee?.latinName,
+                            presence,
+                            attendance: shift === "Morning" ? morningAttendance : afternoonAttendance,
+                            fine: shift === "Morning" ? getAttendance?.morningShift?.fine || 0 : getAttendance?.afternoonShift?.fine || 0,
+                            reason: shift === "Morning" ? getAttendance?.morningShift?.reason : getAttendance?.afternoonShift?.reason
+                        }
+                    })
+                )
+                const data = datas.filter(data => data?.presence === false)
+                return data;
             } catch (error) {
                 return error
             }

@@ -12,6 +12,7 @@ const geolib_1 = require("geolib");
 const paginationLabel_1 = require("../../fn/paginationLabel");
 const mongoose_1 = __importDefault(require("mongoose"));
 const MessageRespone_1 = __importDefault(require("../../fn/MessageRespone"));
+const Branch_1 = require("../../models/Branch");
 const attendanceResolver = {
     Query: {
         getAttendancePagination: async (_root, { page, limit, keyword, branchId, date }) => {
@@ -114,47 +115,39 @@ const attendanceResolver = {
         },
         getDailyAttendanceReport: async (_root, { date, shift }) => {
             try {
-                const shiftQuery = shift === "Morning" ? {
-                    $match: {
-                        "morningShift.attendance": {
-                            $ne: "Presence"
-                        }
-                    }
-                } : {
-                    $match: {
-                        "afternoonShift.attendance": {
-                            $ne: "Presence"
-                        }
-                    }
-                };
-                const getAttendances = await Attendance_1.default.aggregate([
-                    { $match: { attendanceDate: new Date(date) } },
-                    shiftQuery,
-                    {
-                        $lookup: {
-                            from: "employees",
-                            localField: "employeeId",
-                            foreignField: "_id",
-                            as: "employeeId",
-                        },
-                    },
-                    {
-                        $unwind: { path: "$employeeId" },
-                    },
+                const WorkingTimeShift = shift === "Morning" ? { shiftName: "Morning" } : { shiftName: "Afternoon" };
+                const getCheckWorkingTime = await Branch_1.WrokingTime.find(WorkingTimeShift);
+                const WorkingTimeEmployeeId = getCheckWorkingTime.map((workingTime) => workingTime?.employeeId);
+                const getEmployees = await Employee_1.default.aggregate([
+                    { $match: { _id: { $in: WorkingTimeEmployeeId } } },
+                    { $match: { workingStatus: "working" } },
                 ]);
-                const datas = getAttendances.map((attendance) => {
-                    const fineMorning = attendance?.morningShift?.fine ? attendance?.morningShift?.fine : 0;
-                    const fineAfternoon = attendance?.afternoonShift?.fine ? attendance?.afternoonShift?.fine : 0;
+                const datas = await Promise.all(getEmployees.map(async (employee) => {
+                    const getAttendance = await Attendance_1.default.findOne({
+                        $and: [
+                            {
+                                attendanceDate: new Date(date)
+                            },
+                            {
+                                employeeId: employee?._id
+                            }
+                        ]
+                    });
+                    const presence = getAttendance?.morningShift?.attendance === "Presence" || getAttendance?.afternoonShift?.attendance === "Presence" ? true : false;
+                    const morningAttendance = getAttendance?.morningShift?.attendance ? getAttendance?.morningShift?.attendance : "Absence";
+                    const afternoonAttendance = getAttendance?.afternoonShift?.attendance ? getAttendance?.afternoonShift?.attendance : "Absence";
                     return {
-                        _id: attendance?._id,
-                        profileImage: attendance?.employeeId?.profileImage,
-                        latinName: attendance?.employeeId?.latinName,
-                        fine: shift === "Morning" ? fineMorning : fineAfternoon,
-                        attendance: shift === "Morning" ? attendance?.morningShift?.attendance : attendance?.afternoonShift?.attendance,
-                        reason: shift === "Morning" ? attendance?.morningShift?.reason : attendance?.afternoonShift?.reason
+                        _id: employee?._id,
+                        profileImage: employee?.profileImage,
+                        latinName: employee?.latinName,
+                        presence,
+                        attendance: shift === "Morning" ? morningAttendance : afternoonAttendance,
+                        fine: shift === "Morning" ? getAttendance?.morningShift?.fine || 0 : getAttendance?.afternoonShift?.fine || 0,
+                        reason: shift === "Morning" ? getAttendance?.morningShift?.reason : getAttendance?.afternoonShift?.reason
                     };
-                });
-                return datas;
+                }));
+                const data = datas.filter(data => data?.presence === false);
+                return data;
             }
             catch (error) {
                 return error;
