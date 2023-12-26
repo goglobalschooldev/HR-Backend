@@ -16,7 +16,12 @@ const EvaluationType = `#graphql
         overall: String
         overallStatus: Boolean
     }
+    enum AllowEvaluationType {
+        Score
+        Choice
+    }
     type EvaluationDeteil {
+        evaluationType: AllowEvaluationType
         _id: ID
         title: String
         value:[EvaluationValue]
@@ -35,6 +40,7 @@ const EvaluationType = `#graphql
     type Evaluation {
         _id: ID
         title: String
+        evaluationType: AllowEvaluationType
         evaluations:[String]
     }
  
@@ -44,7 +50,7 @@ const EvaluationType = `#graphql
     evaluations: [EvaluationDeteilInput]
    }
    input EvaluationDeteilInput {
-        title: String
+        title: ID
         value:[EvaluationValueInput]
     }
     input EvaluationValueInput {
@@ -63,8 +69,8 @@ const EvaluationType = `#graphql
         getEvaluationScore:[EvaluationScore]!
     }
     type Mutation {
-        createEvaluation(title: String, evaluations: [String]!): Message!
-        updateEvaluation(_id: String, title: String, evaluations: [String]!): Message!
+        createEvaluation(title: String, evaluations: [String]!, evaluationType: AllowEvaluationType!): Message!
+        updateEvaluation(_id: String, title: String, evaluations: [String]!,evaluationType: AllowEvaluationType!): Message!
         deleteEvaluation(_id: String): Message!
 
         # Evaluation Employee

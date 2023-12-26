@@ -176,7 +176,7 @@ const ShiftResolver = {
                         time: (0, currentDate_1.currentTime)(),
                     }).save();
                     if (updateLeave?.shiftOff === "AllDay") {
-                        for (var date = new Date(updateLeave?.from); date <= new Date(updateLeave?.to); date.setDate(date.getDate() + 1)) {
+                        for (var date = updateLeave?.from; date <= updateLeave?.to; date.setDate(date.getDate() + 1)) {
                             (0, LeaveRecordAtt_1.default)(date, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
                         }
                     }

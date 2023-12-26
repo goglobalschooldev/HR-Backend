@@ -17,7 +17,15 @@ const EvaluationResolver = {
                 const getEvaluations = await Evaluation_1.Evaluation.find({
                     title: { $regex: keyword, $options: "i" }
                 });
-                return getEvaluations;
+                const Evaluations = getEvaluations?.map((data) => {
+                    return {
+                        _id: data?._id,
+                        title: data?.title,
+                        evaluationType: data?.type,
+                        evaluations: data?.evaluations
+                    };
+                });
+                return Evaluations;
             }
             catch (error) {
                 return error;
@@ -29,14 +37,9 @@ const EvaluationResolver = {
                     employeeId: new mongoose_1.default.Types.ObjectId(employeeId)
                 }).populate("evaluationBy commentsBy.user");
                 const data = await Promise.all(getEvaluations.map(async (evalua) => {
-                    const commentsBy = evalua.commentsBy.map((user) => {
-                        return {
-                            _id: user._id,
-                            text: user.text,
-                        };
-                    });
+                    console.log(evalua);
                     const av = evalua.evaluations.map((eva) => {
-                        const points = eva.value.map((point) => point.point);
+                        const points = eva.value.map((point) => point?.point);
                         const sum = points.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue;
                         }, 0);
@@ -64,7 +67,6 @@ const EvaluationResolver = {
                         evaluationBySrc: evalua?.evaluationBy?.profileImage,
                         evaluations: evalua.evaluations,
                         evaluationByPosition: position === undefined ? "No Cotract" : position,
-                        commentsBy,
                         overallScore,
                         overallAverage: sumav / av.length
                     };
@@ -86,9 +88,9 @@ const EvaluationResolver = {
         }
     },
     Mutation: {
-        createEvaluation: async (_root, { title, evaluations }) => {
+        createEvaluation: async (_root, { title, evaluations, evaluationType }) => {
             try {
-                const add = await new Evaluation_1.Evaluation({ title, evaluations }).save();
+                const add = await new Evaluation_1.Evaluation({ title, evaluations, type: evaluationType }).save();
                 if (add) {
                     return (0, MessageRespone_1.default)(true);
                 }
@@ -97,9 +99,9 @@ const EvaluationResolver = {
                 return error;
             }
         },
-        updateEvaluation: async (_root, { _id, title, evaluations }) => {
+        updateEvaluation: async (_root, { _id, title, evaluations, evaluationType }) => {
             try {
-                const upd = await Evaluation_1.Evaluation.findByIdAndUpdate(_id, { title, evaluations });
+                const upd = await Evaluation_1.Evaluation.findByIdAndUpdate(_id, { title, evaluations, type: evaluationType });
                 if (upd) {
                     return (0, MessageRespone_1.default)(true);
                 }

@@ -161,6 +161,7 @@ const ShiftResolver = {
         },
         approveLeave: async (_root: undefined, { leaveID, hrComment }: { leaveID: string, hrComment: string }, { req }: { req: express.Request }) => {
             try {
+
                 const auchCheck = await AuchCheck(req)
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
@@ -186,7 +187,7 @@ const ShiftResolver = {
 
                     // ["AllDay", "Morning", "Afternoon"] },
                     if (updateLeave?.shiftOff === "AllDay") {
-                        for (var date = new Date(updateLeave?.from); date <= new Date(updateLeave?.to); date.setDate(date.getDate() + 1)) {
+                        for (var date = updateLeave?.from; date <= updateLeave?.to; date.setDate(date.getDate() + 1)) {
                             LeaveRecordAtt(date, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
                         }
                     }

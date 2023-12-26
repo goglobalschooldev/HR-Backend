@@ -4,6 +4,7 @@ import { iEmployee } from "./iEmployee";
 export interface iEvaluation {
     _id: ObjectId;
     title: string;
+    type: string;
     evaluations: [string];
     createdAt: Date;
 }

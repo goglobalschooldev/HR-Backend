@@ -3,8 +3,8 @@ import paginate from 'mongoose-paginate-v2'
 import { iEmployeeEvaluate, iEvaluation, iEvaluationScore } from "../interface/iEvaluation";
 
 const EvaluationSchema = new Schema<iEvaluation>({
-    _id: Schema.Types.ObjectId,
     title: String,
+    type: { type: String, enum: ["Score", "Choice"] },
     evaluations: [String],
     createdAt: { type: Date, default: Date.now }
 })
@@ -15,7 +15,7 @@ const EmployeeEvaluateSchema = new Schema<iEmployeeEvaluate>({
     employeeId: { type: mongoose.Types.ObjectId, ref: 'employees' },
     evaluations: [
         {
-            title: String,
+            title: { type: mongoose.Types.ObjectId, ref: 'evaluates' },
             value: [
                 {
                     evaluation: String,

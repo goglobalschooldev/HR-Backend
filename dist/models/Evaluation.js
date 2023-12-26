@@ -30,8 +30,8 @@ exports.EvaluationScore = exports.EmployeeEvaluate = exports.Evaluation = void 0
 const mongoose_1 = __importStar(require("mongoose"));
 const mongoose_paginate_v2_1 = __importDefault(require("mongoose-paginate-v2"));
 const EvaluationSchema = new mongoose_1.Schema({
-    _id: mongoose_1.Schema.Types.ObjectId,
     title: String,
+    type: { type: String, enum: ["Score", "Choice"] },
     evaluations: [String],
     createdAt: { type: Date, default: Date.now }
 });
@@ -41,7 +41,7 @@ const EmployeeEvaluateSchema = new mongoose_1.Schema({
     employeeId: { type: mongoose_1.default.Types.ObjectId, ref: 'employees' },
     evaluations: [
         {
-            title: String,
+            title: { type: mongoose_1.default.Types.ObjectId, ref: 'evaluates' },
             value: [
                 {
                     evaluation: String,

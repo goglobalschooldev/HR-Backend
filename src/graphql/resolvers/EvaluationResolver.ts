@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import AuchCheck from "../../auth/AuchCheck";
 import MessageRespone from "../../fn/MessageRespone"
 import { currentDate } from "../../fn/currentDate";
-import { iEmployeeEvaluate } from "../../interface/iEvaluation"
+import { iEmployeeEvaluate, iEvaluation } from "../../interface/iEvaluation"
 import Employee from "../../models/Employee";
 import { EmployeeEvaluate, Evaluation, EvaluationScore } from "../../models/Evaluation"
 import express from 'express';
@@ -15,7 +15,17 @@ const EvaluationResolver = {
                 const getEvaluations = await Evaluation.find({
                     title: { $regex: keyword, $options: "i" }
                 })
-                return getEvaluations
+
+                const Evaluations = getEvaluations?.map((data: iEvaluation) => {
+
+                    return {
+                        _id: data?._id,
+                        title: data?.title,
+                        evaluationType: data?.type,
+                        evaluations: data?.evaluations
+                    }
+                })
+                return Evaluations;
             } catch (error) {
                 return error
             }
@@ -28,16 +38,11 @@ const EvaluationResolver = {
 
                 const data = await Promise.all(
                     getEvaluations.map(async (evalua: any) => {
-                        const commentsBy: any = evalua.commentsBy.map((user: any) => {
-                            return {
-                                _id: user._id,
-                                text: user.text,
-                                // userName: user.user === undefined ? "" : user..latin_name.first_name + " " + user.evaluationBy.latin_name.last_name,
-                                // userSrc: user.evaluationBy === undefined ? "" : user.evaluationBy.image.src,
-                            }
-                        });
+                        console.log(evalua);
                         const av = evalua.evaluations.map((eva: any) => {
-                            const points = eva.value.map((point: any) => point.point)
+
+                            const points = eva.value.map((point: any) => point?.point);
+
                             const sum = points.reduce((accumulator: any, currentValue: any) => {
                                 return accumulator + currentValue;
                             }, 0);
@@ -50,9 +55,7 @@ const EvaluationResolver = {
                         }, 0);
 
                         const position = await getPosition(evalua?.evaluationBy?._id)
-                        //                 overallScore: [OverallStatus]
-                        // overall: String
-                        // overallStatus: status
+
                         const overallAverage: number = sumav / av.length;
                         let intNumber = Math.floor(overallAverage);
                         const getOverallScore = await EvaluationScore.find();
@@ -72,7 +75,7 @@ const EvaluationResolver = {
                             evaluationBySrc: evalua?.evaluationBy?.profileImage,
                             evaluations: evalua.evaluations,
                             evaluationByPosition: position === undefined ? "No Cotract" : position,
-                            commentsBy,
+                            // commentsBy,
                             overallScore,
                             overallAverage: sumav / av.length
                         }
@@ -112,9 +115,9 @@ const EvaluationResolver = {
         }
     },
     Mutation: {
-        createEvaluation: async (_root: undefined, { title, evaluations }: { title: string, evaluations: [string] }) => {
+        createEvaluation: async (_root: undefined, { title, evaluations, evaluationType }: { title: string, evaluations: [string], evaluationType: String }) => {
             try {
-                const add = await new Evaluation({ title, evaluations }).save()
+                const add = await new Evaluation({ title, evaluations, type: evaluationType }).save()
                 if (add) {
                     return MessageRespone(true)
                 }
@@ -122,9 +125,9 @@ const EvaluationResolver = {
                 return error
             }
         },
-        updateEvaluation: async (_root: undefined, { _id, title, evaluations }: { _id: string, title: string, evaluations: [string] }) => {
+        updateEvaluation: async (_root: undefined, { _id, title, evaluations, evaluationType }: { _id: string, title: string, evaluations: [string], evaluationType: String }) => {
             try {
-                const upd = await Evaluation.findByIdAndUpdate(_id, { title, evaluations });
+                const upd = await Evaluation.findByIdAndUpdate(_id, { title, evaluations, type: evaluationType });
                 if (upd) {
                     return MessageRespone(true)
                 } else {
@@ -211,6 +214,7 @@ const EvaluationResolver = {
                 return error
             }
         },
+        
         headCommentEvaluation: async (_root: undefined, { _id, text }: { _id: string, text: string }, { req }: { req: express.Request }) => {
             try {
                 const auchCheck = await AuchCheck(req);
