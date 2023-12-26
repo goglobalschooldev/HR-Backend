@@ -188,14 +188,14 @@ const ShiftResolver = {
                     // ["AllDay", "Morning", "Afternoon"] },
                     if (updateLeave?.shiftOff === "AllDay") {
                         for (var date = updateLeave?.from; date <= updateLeave?.to; date.setDate(date.getDate() + 1)) {
-                            LeaveRecordAtt(date, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
+                            LeaveRecordAtt(currentDate(date), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
                         }
                     }
                     if (updateLeave?.shiftOff === "Morning") {
-                        LeaveRecordAtt(updateLeave?.from, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
+                        LeaveRecordAtt(currentDate(updateLeave?.from), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
                     }
                     if (updateLeave?.shiftOff === "Afternoon") {
-                        LeaveRecordAtt(updateLeave?.from, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
+                        LeaveRecordAtt(currentDate(updateLeave?.from), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason)
                     }
                     return MessageRespone(true)
                 } else {

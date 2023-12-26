@@ -1,6 +1,6 @@
 import Attendance from "../models/Attendance"
 
-const LeaveRecordAtt = async (attendanceDate: Date, employeeId: string, shiftOff: string, reason: string) => {
+const LeaveRecordAtt = async (attendanceDate: string, employeeId: string, shiftOff: string, reason: string) => {
 
     const checkAttendance = await Attendance.findOne({ attendanceDate, employeeId });
 

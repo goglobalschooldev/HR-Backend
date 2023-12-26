@@ -177,14 +177,14 @@ const ShiftResolver = {
                     }).save();
                     if (updateLeave?.shiftOff === "AllDay") {
                         for (var date = updateLeave?.from; date <= updateLeave?.to; date.setDate(date.getDate() + 1)) {
-                            (0, LeaveRecordAtt_1.default)(date, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
+                            (0, LeaveRecordAtt_1.default)((0, currentDate_1.currentDate)(date), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
                         }
                     }
                     if (updateLeave?.shiftOff === "Morning") {
-                        (0, LeaveRecordAtt_1.default)(updateLeave?.from, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
+                        (0, LeaveRecordAtt_1.default)((0, currentDate_1.currentDate)(updateLeave?.from), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
                     }
                     if (updateLeave?.shiftOff === "Afternoon") {
-                        (0, LeaveRecordAtt_1.default)(updateLeave?.from, updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
+                        (0, LeaveRecordAtt_1.default)((0, currentDate_1.currentDate)(updateLeave?.from), updateLeave?.requestBy?.toString(), updateLeave?.shiftOff, updateLeave?.reason);
                     }
                     return (0, MessageRespone_1.default)(true);
                 }
