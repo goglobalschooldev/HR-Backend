@@ -34,15 +34,13 @@ const EvaluationResolver = {
             try {
                 const getEvaluations = await EmployeeEvaluate.find({
                     employeeId: new mongoose.Types.ObjectId(employeeId)
-                }).populate("evaluationBy commentsBy.user")
+                }).populate("evaluationBy commentsBy.user evaluations.title")
 
                 const data = await Promise.all(
                     getEvaluations.map(async (evalua: any) => {
-                        console.log(evalua);
-                        const av = evalua.evaluations.map((eva: any) => {
+                        const av = evalua?.evaluations.map((eva: any) => {
 
                             const points = eva.value.map((point: any) => point?.point);
-
                             const sum = points.reduce((accumulator: any, currentValue: any) => {
                                 return accumulator + currentValue;
                             }, 0);
@@ -65,19 +63,42 @@ const EvaluationResolver = {
                                 overallStatus: ver?.score === intNumber ? true : false
                             }
                         })
+                        const evaluations = evalua?.evaluations?.map((evaluat: any) => {
+                            if (evaluat?.title?.type === "Choice") {
+                                const value = evaluat?.value?.map((val: any) => {
+                                    // console.log(val);
+                                    return {
+                                        evaluation: val?.evaluation,
+                                        point: 0
+                                    }
+                                })
+                                return {
+                                    _id: evaluat?._id,
+                                    evaluationType: evaluat?.title?.type,
+                                    title: evaluat?.title?.title,
+                                    value
+                                }
+                            } else {
+                                return {
+                                    _id: evaluat?._id,
+                                    evaluationType: evaluat?.title?.type,
+                                    title: evaluat?.title?.title,
+                                    value: evaluat?.value
+                                }
+                            }
 
+
+                        })
                         return {
                             _id: evalua._id,
                             date: evalua.date,
                             type: evalua.type,
-                            employeeId: evalua.employeeId,
                             evaluationBy: evalua?.evaluationBy?.latinName,
                             evaluationBySrc: evalua?.evaluationBy?.profileImage,
-                            evaluations: evalua.evaluations,
                             evaluationByPosition: position === undefined ? "No Cotract" : position,
-                            // commentsBy,
-                            overallScore,
-                            overallAverage: sumav / av.length
+                            evaluations,
+                            // overallScore,
+                            // overallAverage: sumav / av.length
                         }
                     })
                 )
@@ -214,7 +235,7 @@ const EvaluationResolver = {
                 return error
             }
         },
-        
+
         headCommentEvaluation: async (_root: undefined, { _id, text }: { _id: string, text: string }, { req }: { req: express.Request }) => {
             try {
                 const auchCheck = await AuchCheck(req);

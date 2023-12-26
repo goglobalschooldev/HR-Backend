@@ -147,6 +147,15 @@ const attendanceResolver = {
                     };
                 }));
                 const data = datas.filter(data => data?.presence === false);
+                data.sort(function (a, b) {
+                    if (a.attendance < b.attendance) {
+                        return -1;
+                    }
+                    if (a.attendance > b.attendance) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 return data;
             }
             catch (error) {

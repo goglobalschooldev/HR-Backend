@@ -35,10 +35,9 @@ const EvaluationResolver = {
             try {
                 const getEvaluations = await Evaluation_1.EmployeeEvaluate.find({
                     employeeId: new mongoose_1.default.Types.ObjectId(employeeId)
-                }).populate("evaluationBy commentsBy.user");
+                }).populate("evaluationBy commentsBy.user evaluations.title");
                 const data = await Promise.all(getEvaluations.map(async (evalua) => {
-                    console.log(evalua);
-                    const av = evalua.evaluations.map((eva) => {
+                    const av = evalua?.evaluations.map((eva) => {
                         const points = eva.value.map((point) => point?.point);
                         const sum = points.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue;
@@ -58,17 +57,38 @@ const EvaluationResolver = {
                             overallStatus: ver?.score === intNumber ? true : false
                         };
                     });
+                    const evaluations = evalua?.evaluations?.map((evaluat) => {
+                        if (evaluat?.title?.type === "Choice") {
+                            const value = evaluat?.value?.map((val) => {
+                                return {
+                                    evaluation: val?.evaluation,
+                                    point: 0
+                                };
+                            });
+                            return {
+                                _id: evaluat?._id,
+                                evaluationType: evaluat?.title?.type,
+                                title: evaluat?.title?.title,
+                                value
+                            };
+                        }
+                        else {
+                            return {
+                                _id: evaluat?._id,
+                                evaluationType: evaluat?.title?.type,
+                                title: evaluat?.title?.title,
+                                value: evaluat?.value
+                            };
+                        }
+                    });
                     return {
                         _id: evalua._id,
                         date: evalua.date,
                         type: evalua.type,
-                        employeeId: evalua.employeeId,
                         evaluationBy: evalua?.evaluationBy?.latinName,
                         evaluationBySrc: evalua?.evaluationBy?.profileImage,
-                        evaluations: evalua.evaluations,
                         evaluationByPosition: position === undefined ? "No Cotract" : position,
-                        overallScore,
-                        overallAverage: sumav / av.length
+                        evaluations,
                     };
                 }));
                 return data;

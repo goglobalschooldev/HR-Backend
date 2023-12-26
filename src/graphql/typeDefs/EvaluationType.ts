@@ -3,14 +3,12 @@ const EvaluationType = `#graphql
         _id: ID
         date: Date
         type: String
-        employeeId: ID
-        evaluations: [EvaluationDeteil]
-        overallAverage: Float
-        evaluationBy: String
+         evaluationBy: String
         evaluationBySrc: String
         evaluationByPosition: String
-        overallScore: [OverallStatus]
-        commentsBy: [EvaluationComment]
+        evaluations: [EvaluationDeteil]
+        # overallAverage: Float
+        # overallScore: [OverallStatus]
     }
     type OverallStatus {
         overall: String
@@ -21,8 +19,8 @@ const EvaluationType = `#graphql
         Choice
     }
     type EvaluationDeteil {
-        evaluationType: AllowEvaluationType
         _id: ID
+        evaluationType: AllowEvaluationType
         title: String
         value:[EvaluationValue]
     }
