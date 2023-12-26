@@ -84,7 +84,7 @@ const ShiftResolver = {
                         approveByProfile: data?.approveBy?.profileImage,
                         cancelByProfile: data?.cancelBy?.profileImage,
                         hrComment: data?.hrComment,
-                        requestAt: data?.requestAt
+                        requestAt: `${(0, currentDate_1.currentDate)(data?.createdAt)},${data?.requestAt}`
                     };
                 });
                 return {
