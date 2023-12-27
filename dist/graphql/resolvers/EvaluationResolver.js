@@ -37,7 +37,16 @@ const EvaluationResolver = {
                     employeeId: new mongoose_1.default.Types.ObjectId(employeeId)
                 }).populate("evaluationBy commentsBy.user evaluations.title");
                 const data = await Promise.all(getEvaluations.map(async (evalua) => {
-                    const av = evalua?.evaluations.map((eva) => {
+                    const getEvaluationScore = evalua?.evaluations?.filter((ev) => ev?.title?.type === "Score");
+                    const getEvaluationChoice = evalua?.evaluations?.filter((ev) => ev?.title?.type === "Choice");
+                    const evaluationScore = getEvaluationScore.map((eva) => {
+                        return {
+                            _id: eva?._id,
+                            title: eva?.title?.title,
+                            value: eva?.value
+                        };
+                    });
+                    const av = getEvaluationScore.map((eva) => {
                         const points = eva.value.map((point) => point?.point);
                         const sum = points.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue;
@@ -47,39 +56,17 @@ const EvaluationResolver = {
                     const sumav = av.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue;
                     }, 0);
-                    const position = await (0, getPosition_1.getPosition)(evalua?.evaluationBy?._id);
                     const overallAverage = sumav / av.length;
                     let intNumber = Math.floor(overallAverage);
-                    const getOverallScore = await Evaluation_1.EvaluationScore.find();
-                    const overallScore = getOverallScore.map((ver) => {
+                    const getOverallScore = await Evaluation_1.EvaluationScore.findOne({ score: { $eq: intNumber } });
+                    const position = await (0, getPosition_1.getPosition)(evalua?.evaluationBy?._id);
+                    const evaluationChoice = getEvaluationChoice.map((eva) => {
+                        const value = eva?.value?.find((val) => val?.point === 1);
                         return {
-                            overall: ver?.evaluation,
-                            overallStatus: ver?.score === intNumber ? true : false
+                            _id: eva?._id,
+                            title: eva?.title?.title,
+                            value: value?.evaluation
                         };
-                    });
-                    const evaluations = evalua?.evaluations?.map((evaluat) => {
-                        if (evaluat?.title?.type === "Choice") {
-                            const value = evaluat?.value?.map((val) => {
-                                return {
-                                    evaluation: val?.evaluation,
-                                    point: 0
-                                };
-                            });
-                            return {
-                                _id: evaluat?._id,
-                                evaluationType: evaluat?.title?.type,
-                                title: evaluat?.title?.title,
-                                value
-                            };
-                        }
-                        else {
-                            return {
-                                _id: evaluat?._id,
-                                evaluationType: evaluat?.title?.type,
-                                title: evaluat?.title?.title,
-                                value: evaluat?.value
-                            };
-                        }
                     });
                     return {
                         _id: evalua._id,
@@ -88,10 +75,31 @@ const EvaluationResolver = {
                         evaluationBy: evalua?.evaluationBy?.latinName,
                         evaluationBySrc: evalua?.evaluationBy?.profileImage,
                         evaluationByPosition: position === undefined ? "No Cotract" : position,
-                        evaluations,
+                        evaluationScore,
+                        overallScore: getOverallScore?.evaluation,
+                        evaluationChoice,
+                        overallAverage
                     };
                 }));
                 return data;
+            }
+            catch (error) {
+                return error;
+            }
+        },
+        getHeadCommentsEvaluation: async (_root, { evaluationId }) => {
+            try {
+                const getEvaluations = await Evaluation_1.EmployeeEvaluate.findById(evaluationId).populate("commentsBy.user");
+                const commentsBy = getEvaluations.commentsBy.map(user => {
+                    return {
+                        _id: user._id,
+                        text: user.text,
+                        userName: commentsBy?.user?.lanitnName,
+                        userSrc: commentsBy?.user?.profileImage,
+                        date: user.date
+                    };
+                });
+                return commentsBy;
             }
             catch (error) {
                 return error;
@@ -221,12 +229,19 @@ const EvaluationResolver = {
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
                 }
+                ;
                 const Evaluation = await Evaluation_1.EmployeeEvaluate.findByIdAndUpdate(_id, { $push: { commentsBy: { text, user: auchCheck?.user?.user_id?.toString() } } });
                 if (Evaluation) {
-                    return (0, MessageRespone_1.default)(true);
+                    return {
+                        message: "Success!",
+                        status: true
+                    };
                 }
                 else {
-                    return (0, MessageRespone_1.default)(false);
+                    return {
+                        message: "Fail!",
+                        status: false
+                    };
                 }
             }
             catch (error) {

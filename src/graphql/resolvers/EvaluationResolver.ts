@@ -38,8 +38,18 @@ const EvaluationResolver = {
 
                 const data = await Promise.all(
                     getEvaluations.map(async (evalua: any) => {
-                        const av = evalua?.evaluations.map((eva: any) => {
+                        const getEvaluationScore = evalua?.evaluations?.filter((ev: any) => ev?.title?.type === "Score")
+                        const getEvaluationChoice = evalua?.evaluations?.filter((ev: any) => ev?.title?.type === "Choice")
 
+                        // EvaluationScore====================
+                        const evaluationScore = getEvaluationScore.map((eva: any) => {
+                            return {
+                                _id: eva?._id,
+                                title: eva?.title?.title,
+                                value: eva?.value
+                            }
+                        })
+                        const av = getEvaluationScore.map((eva: any) => {
                             const points = eva.value.map((point: any) => point?.point);
                             const sum = points.reduce((accumulator: any, currentValue: any) => {
                                 return accumulator + currentValue;
@@ -52,42 +62,25 @@ const EvaluationResolver = {
                             return accumulator + currentValue;
                         }, 0);
 
-                        const position = await getPosition(evalua?.evaluationBy?._id)
-
+                        // Get Overall Average ============================
                         const overallAverage: number = sumav / av.length;
+
+
+
                         let intNumber = Math.floor(overallAverage);
-                        const getOverallScore = await EvaluationScore.find();
-                        const overallScore = getOverallScore.map((ver: any) => {
+
+                        const getOverallScore = await EvaluationScore.findOne({ score: { $eq: intNumber } });
+                        // position ===========
+                        const position = await getPosition(evalua?.evaluationBy?._id);
+                        // evaluationChoice
+                        const evaluationChoice = getEvaluationChoice.map((eva: any) => {
+                            const value = eva?.value?.find((val: any) => val?.point === 1)
+                            // console.log(value);
                             return {
-                                overall: ver?.evaluation,
-                                overallStatus: ver?.score === intNumber ? true : false
+                                _id: eva?._id,
+                                title: eva?.title?.title,
+                                value: value?.evaluation
                             }
-                        })
-                        const evaluations = evalua?.evaluations?.map((evaluat: any) => {
-                            if (evaluat?.title?.type === "Choice") {
-                                const value = evaluat?.value?.map((val: any) => {
-                                    // console.log(val);
-                                    return {
-                                        evaluation: val?.evaluation,
-                                        point: 0
-                                    }
-                                })
-                                return {
-                                    _id: evaluat?._id,
-                                    evaluationType: evaluat?.title?.type,
-                                    title: evaluat?.title?.title,
-                                    value
-                                }
-                            } else {
-                                return {
-                                    _id: evaluat?._id,
-                                    evaluationType: evaluat?.title?.type,
-                                    title: evaluat?.title?.title,
-                                    value: evaluat?.value
-                                }
-                            }
-
-
                         })
                         return {
                             _id: evalua._id,
@@ -96,9 +89,10 @@ const EvaluationResolver = {
                             evaluationBy: evalua?.evaluationBy?.latinName,
                             evaluationBySrc: evalua?.evaluationBy?.profileImage,
                             evaluationByPosition: position === undefined ? "No Cotract" : position,
-                            evaluations,
-                            // overallScore,
-                            // overallAverage: sumav / av.length
+                            evaluationScore,
+                            overallScore: getOverallScore?.evaluation,
+                            evaluationChoice,
+                            overallAverage
                         }
                     })
                 )
@@ -107,25 +101,26 @@ const EvaluationResolver = {
                 return error
             }
         },
-        // getHeadCommentsEvaluation: async (__, { evaluationId }) => {
-        //     try {
-        //         const getEvaluations = await EmployeeEvaluation.findById(evaluationId).populate("commentsBy.user");
-        //         const commentsBy = getEvaluations.commentsBy.map(user => {
-        //             // console.log(user.user);
-        //             return {
-        //                 _id: user._id,
-        //                 text: user.text,
-        //                 userName: user.user === undefined ? "" : user.user.latin_name.first_name + " " + user.user.latin_name.last_name,
-        //                 userSrc: user.user === undefined ? "" : user.user.image.src,
-        //                 date: user.date
-        //             }
-        //         });
-        //         return commentsBy
-        //     } catch (error) {
-        //         return error
-        //     }
-        // },
+        getHeadCommentsEvaluation: async (_root: undefined, { evaluationId }: { evaluationId: string }) => {
+            try {
+                const getEvaluations = await EmployeeEvaluate.findById(evaluationId).populate("commentsBy.user");
 
+                const commentsBy: any = getEvaluations.commentsBy.map(user => {
+                    // console.log(user.user);
+                    return {
+                        _id: user._id,
+                        text: user.text,
+                        userName: commentsBy?.user?.lanitnName,
+                        userSrc: commentsBy?.user?.profileImage,
+                        date: user.date
+                    }
+                });
+
+                return commentsBy
+            } catch (error) {
+                return error
+            }
+        },
         getEvaluationScore: async (_root: undefined) => {
             try {
                 const data = await EvaluationScore.find();
@@ -241,12 +236,18 @@ const EvaluationResolver = {
                 const auchCheck = await AuchCheck(req);
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
-                }
+                };
                 const Evaluation = await EmployeeEvaluate.findByIdAndUpdate(_id, { $push: { commentsBy: { text, user: auchCheck?.user?.user_id?.toString() } } })
                 if (Evaluation) {
-                    return MessageRespone(true)
+                    return {
+                        message: "Success!",
+                        status: true
+                    }
                 } else {
-                    return MessageRespone(false)
+                    return {
+                        message: "Fail!",
+                        status: false
+                    }
                 }
             } catch (error) {
                 return error

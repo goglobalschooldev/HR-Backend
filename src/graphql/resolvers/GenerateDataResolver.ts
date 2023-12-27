@@ -10,11 +10,59 @@ import Shift from "../../models/Shift";
 // import att from '../../db/att.json';
 // import employees from '../../db/employees.json';
 import Attendance from "../../models/Attendance";
+import removeDuplicates from "../../fn/removeDuplicates";
+import moment from "moment";
 const generate = {
     Query: {
         generateData: async (_root: undefined) => {
             try {
+                const empId = new mongoose.Types.ObjectId("635f892882da276b1b9ac282")
+                const getAttmorningShift = await Attendance.aggregate([
+                    { $match: { employeeId: empId } },
+                    { $match: { "morningShift.attendance": "Permission" } },
+                ]);
+                const getAttafternoonShift = await Attendance.aggregate([
+                    { $match: { employeeId: empId } },
+                    { $match: { "afternoonShift.attendance": "Permission" } },
+                ]);
 
+                const getAttmorningShiftId = getAttmorningShift.map(da => da._id.toString())
+                const getAttafternoonShiftId = getAttafternoonShift.map(da => da._id.toString())
+                const totalID = [...getAttafternoonShiftId, ...getAttmorningShiftId]
+                const reDuplicates = removeDuplicates(totalID);
+                const data = await Promise.all(reDuplicates.map(async (permision: string) => {
+                    const getAtt = await Attendance.findById(permision);
+
+                    let attendanceDate = moment(getAtt?.attendanceDate).format('MMM');
+                    return attendanceDate
+                }))
+                console.log(data.sort());
+                // console.log(totalID.length / 2);
+                // console.log(data.length / 2);
+
+
+
+                // await new Attendance({
+                //     attendanceDate: currentDate(new Date("2023-03-02")),
+                //     employeeId: empId,
+                //     // morningShift: {
+                //     //     reason: "Update System",
+                //     //     attendance: "Permission",
+                //     // },
+                //     afternoonShift: {
+                //         reason: "Update System",
+                //         attendance: "Permission",
+                //     },
+                // }).save()
+
+
+
+
+
+
+
+
+                // console.log(reDuplicates.length / 2);
                 // branchs da new ✅
                 // employees(id cared) ✅
                 // employees.map(async (emp: any) => {
@@ -22,29 +70,29 @@ const generate = {
                 //         type: emp?.type
 
                 //     })
-                    // await new Employee({
-                    //     _id: emp?._id?.$oid,
-                    //     nationalId: emp?.national_id,
-                    //     employeeId: emp?.employee_id,
-                    //     firstName: emp?.khmer_name?.first_name,
-                    //     lastName: emp?.khmer_name?.last_name,
-                    //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
-                    //     gender: emp?.gender,
-                    //     profileImage: emp?.image?.src,
-                    //     joinDate: emp?.join_date?.$date,
-                    //     dob: emp?.date_of_birth?.$date,
-                    //     placeOfBirth: emp?.place_of_birth,
-                    //     nationality: emp?.nationality,
-                    //     tell: emp?.phone,
-                    //     email: emp?.email,
-                    //     currentAddress: emp?.current_address,
-                    //     // idCard: Schema.Types.ObjectId,
-                    //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
-                    //     workingStatus: emp?.working_status,
-                    //     marital: emp?.marital,
-                    //     workBook: emp?.work_book,
-                    //     role: emp?.adminRole
-                    // }).save()
+                // await new Employee({
+                //     _id: emp?._id?.$oid,
+                //     nationalId: emp?.national_id,
+                //     employeeId: emp?.employee_id,
+                //     firstName: emp?.khmer_name?.first_name,
+                //     lastName: emp?.khmer_name?.last_name,
+                //     latinName: emp?.latin_name?.first_name + " " + emp?.latin_name?.last_name,
+                //     gender: emp?.gender,
+                //     profileImage: emp?.image?.src,
+                //     joinDate: emp?.join_date?.$date,
+                //     dob: emp?.date_of_birth?.$date,
+                //     placeOfBirth: emp?.place_of_birth,
+                //     nationality: emp?.nationality,
+                //     tell: emp?.phone,
+                //     email: emp?.email,
+                //     currentAddress: emp?.current_address,
+                //     // idCard: Schema.Types.ObjectId,
+                //     branch: new mongoose.Types.ObjectId("657d6d2d5dad38a23ed2f04e"),
+                //     workingStatus: emp?.working_status,
+                //     marital: emp?.marital,
+                //     workBook: emp?.work_book,
+                //     role: emp?.adminRole
+                // }).save()
                 // })
                 // id card  ✅
 

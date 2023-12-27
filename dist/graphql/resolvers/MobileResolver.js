@@ -12,9 +12,9 @@ const Shift_1 = __importDefault(require("../../models/Shift"));
 const currentDate_1 = require("../../fn/currentDate");
 const AuthAdmin_1 = __importDefault(require("../../auth/AuthAdmin"));
 const EmployeePublicHoliday_1 = __importDefault(require("../../models/EmployeePublicHoliday"));
-const countTotalArray_1 = require("../../fn/countTotalArray");
 const moment_1 = __importDefault(require("moment"));
 const Notification_1 = __importDefault(require("../../models/Notification"));
+const removeDuplicates_1 = __importDefault(require("../../fn/removeDuplicates"));
 const MobileResolver = {
     Query: {
         getAttendanceMobile: async (_root, { limit }, { req }) => {
@@ -118,7 +118,7 @@ const MobileResolver = {
         },
         getEmployeeLeaveInfo: async (_root, { employeeId }) => {
             try {
-                const getAl = await EmployeePublicHoliday_1.default.findOne({ status: true });
+                const getAl = await EmployeePublicHoliday_1.default.findOne({ employeeId: employeeId, status: true });
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const MoningPermission = await Attendance_1.default.find({
@@ -143,6 +143,11 @@ const MobileResolver = {
                         },
                     ]
                 });
+                const getMoningPermissionId = MoningPermission.map(da => da._id.toString());
+                const getAfternoonPermissionId = AfternoonPermission.map(da => da._id.toString());
+                const totalPermissionId = [...getMoningPermissionId, ...getAfternoonPermissionId];
+                const rePermissionIdDuplicates = (0, removeDuplicates_1.default)(totalPermissionId);
+                const permission = rePermissionIdDuplicates.length / 2;
                 const MoningLate = await Attendance_1.default.find({
                     $and: [
                         { employeeId: new mongoose_1.default.Types.ObjectId(employeeId) },
@@ -165,19 +170,11 @@ const MobileResolver = {
                         },
                     ]
                 });
-                const fineMorning = MoningLate.map((mr) => mr?.morningShift?.fine);
-                const fineAfternoon = AfternoonLate.map((mr) => mr?.afternoonShift?.fine);
-                const totalMornigfine = (0, countTotalArray_1.countTotalArray)(fineMorning);
-                const totalAfternoonfin = (0, countTotalArray_1.countTotalArray)(fineAfternoon);
-                const totalLeave = MoningPermission.length + AfternoonPermission.length;
-                const permission = totalLeave / 2;
-                const totalLate = AfternoonLate.length + MoningLate.length;
-                const late = totalLate / 2;
                 return {
                     al: getAl?.totalDay - permission,
                     permission: permission,
-                    late,
-                    fine: totalAfternoonfin + totalMornigfine
+                    late: MoningLate.length + AfternoonLate.length,
+                    fine: MoningLate.length + AfternoonLate.length
                 };
             }
             catch (error) {

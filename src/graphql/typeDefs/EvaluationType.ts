@@ -6,21 +6,23 @@ const EvaluationType = `#graphql
          evaluationBy: String
         evaluationBySrc: String
         evaluationByPosition: String
-        evaluations: [EvaluationDeteil]
-        # overallAverage: Float
-        # overallScore: [OverallStatus]
+        evaluationScore: [EvaluationDeteil]
+        evaluationChoice: [EvaluationChoice]
+        overallAverage: Float
+        overallScore: String
     }
-    type OverallStatus {
-        overall: String
-        overallStatus: Boolean
-    }
+  
     enum AllowEvaluationType {
         Score
         Choice
     }
+    type EvaluationChoice {
+        _id: ID
+        title: String
+        value: String
+    }
     type EvaluationDeteil {
         _id: ID
-        evaluationType: AllowEvaluationType
         title: String
         value:[EvaluationValue]
     }

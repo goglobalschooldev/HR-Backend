@@ -14,6 +14,7 @@ import { countTotalArray } from '../../fn/countTotalArray';
 import moment from 'moment';
 import { iShift } from '../../interface/iShift';
 import Notification from '../../models/Notification';
+import removeDuplicates from '../../fn/removeDuplicates';
 
 const MobileResolver = {
     Query: {
@@ -118,10 +119,13 @@ const MobileResolver = {
         },
         getEmployeeLeaveInfo: async (_root: undefined, { employeeId }: { employeeId: string }) => {
             try {
-                const getAl: iEmployeePublicHoliday = await EmployeePublicHoliday.findOne({ status: true })
+
+                const getAl: iEmployeePublicHoliday = await EmployeePublicHoliday.findOne({ employeeId: employeeId, status: true })
                 const currentDate = new Date();
 
                 const currentYear = currentDate.getFullYear();
+
+                // Permission=======================================================
                 const MoningPermission = await Attendance.find({
                     $and: [
                         { employeeId: new mongoose.Types.ObjectId(employeeId) },
@@ -143,9 +147,17 @@ const MobileResolver = {
                             }
                         },
                     ]
-                })
+                });
+
+                const getMoningPermissionId = MoningPermission.map(da => da._id.toString())
+                const getAfternoonPermissionId = AfternoonPermission.map(da => da._id.toString())
+                const totalPermissionId = [...getMoningPermissionId, ...getAfternoonPermissionId]
+                const rePermissionIdDuplicates = removeDuplicates(totalPermissionId);
+                const permission = rePermissionIdDuplicates.length / 2;
 
 
+
+                // Late=======================================================
                 const MoningLate = await Attendance.find({
                     $and: [
                         { employeeId: new mongoose.Types.ObjectId(employeeId) },
@@ -157,6 +169,7 @@ const MobileResolver = {
                         },
                     ]
                 })
+
                 const AfternoonLate = await Attendance.find({
                     $and: [
                         { employeeId: new mongoose.Types.ObjectId(employeeId) },
@@ -167,24 +180,14 @@ const MobileResolver = {
                             }
                         },
                     ]
-                })
-                const fineMorning = MoningLate.map((mr: any) => mr?.morningShift?.fine)
-                const fineAfternoon = AfternoonLate.map((mr: any) => mr?.afternoonShift?.fine)
-
-                const totalMornigfine = countTotalArray(fineMorning)
-                const totalAfternoonfin = countTotalArray(fineAfternoon)
-                const totalLeave = MoningPermission.length + AfternoonPermission.length
-                const permission = totalLeave / 2;
-
-                const totalLate = AfternoonLate.length + MoningLate.length
-                const late = totalLate / 2;
-
+                });
+             
 
                 return {
                     al: getAl?.totalDay - permission,
                     permission: permission,
-                    late,
-                    fine: totalAfternoonfin + totalMornigfine
+                    late: MoningLate.length + AfternoonLate.length,
+                    fine: MoningLate.length + AfternoonLate.length
                 }
 
             } catch (error) {

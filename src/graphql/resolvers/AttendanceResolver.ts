@@ -120,10 +120,10 @@ const attendanceResolver = {
         },
         getDailyAttendanceReport: async (_root: undefined, { date, shift }: { date: string, shift: string }) => {
             try {
+                
                 const WorkingTimeShift = shift === "morning" ? { shiftName: "Morning" } : { shiftName: "Afternoon" }
-                const getCheckWorkingTime = await WrokingTime.find(WorkingTimeShift)
+                const getCheckWorkingTime = await WrokingTime.find(WorkingTimeShift);
                 const WorkingTimeEmployeeId = getCheckWorkingTime.map((workingTime: iWrokingTime) => workingTime?.employeeId);
-
 
                 const getEmployees = await Employee.aggregate([
                     { $match: { _id: { $in: WorkingTimeEmployeeId } } },

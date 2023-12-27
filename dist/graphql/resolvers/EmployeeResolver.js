@@ -19,7 +19,8 @@ const EmployeeResolver = {
                     limit: limit || 10,
                     customLabels: paginationLabel_1.paginationLabel,
                     pagination: true,
-                    populate: "branch"
+                    populate: "branch",
+                    sort: { createdAt: -1 }
                 };
                 const workingStatusQuery = workingStatus === "All" ? {} : { workingStatus };
                 const query = {
