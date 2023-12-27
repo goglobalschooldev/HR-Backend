@@ -120,7 +120,7 @@ const attendanceResolver = {
         },
         getDailyAttendanceReport: async (_root: undefined, { date, shift }: { date: string, shift: string }) => {
             try {
-                const WorkingTimeShift = shift === "Morning" ? { shiftName: "Morning" } : { shiftName: "Afternoon" }
+                const WorkingTimeShift = shift === "morning" ? { shiftName: "Morning" } : { shiftName: "Afternoon" }
                 const getCheckWorkingTime = await WrokingTime.find(WorkingTimeShift)
                 const WorkingTimeEmployeeId = getCheckWorkingTime.map((workingTime: iWrokingTime) => workingTime?.employeeId);
 
@@ -150,9 +150,9 @@ const attendanceResolver = {
                             profileImage: employee?.profileImage,
                             latinName: employee?.latinName,
                             presence,
-                            attendance: shift === "Morning" ? morningAttendance : afternoonAttendance,
-                            fine: shift === "Morning" ? getAttendance?.morningShift?.fine || 0 : getAttendance?.afternoonShift?.fine || 0,
-                            reason: shift === "Morning" ? getAttendance?.morningShift?.reason : getAttendance?.afternoonShift?.reason
+                            attendance: shift === "morning" ? morningAttendance : afternoonAttendance,
+                            fine: shift === "morning" ? getAttendance?.morningShift?.fine || 0 : getAttendance?.afternoonShift?.fine || 0,
+                            reason: shift === "morning" ? getAttendance?.morningShift?.reason : getAttendance?.afternoonShift?.reason
                         }
                     })
                 )
