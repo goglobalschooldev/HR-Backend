@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const currentDate_1 = require("../../fn/currentDate");
 const Attendance_1 = __importDefault(require("../../models/Attendance"));
 const removeDuplicates_1 = __importDefault(require("../../fn/removeDuplicates"));
 const moment_1 = __importDefault(require("moment"));
@@ -11,7 +12,7 @@ const generate = {
     Query: {
         generateData: async (_root) => {
             try {
-                const empId = new mongoose_1.default.Types.ObjectId("635f892882da276b1b9ac282");
+                const empId = new mongoose_1.default.Types.ObjectId("634f9fee28216566b49361f2");
                 const getAttmorningShift = await Attendance_1.default.aggregate([
                     { $match: { employeeId: empId } },
                     { $match: { "morningShift.attendance": "Permission" } },
@@ -30,6 +31,15 @@ const generate = {
                     return attendanceDate;
                 }));
                 console.log(data.sort());
+                console.log(data.length / 2);
+                await new Attendance_1.default({
+                    attendanceDate: (0, currentDate_1.currentDate)(new Date("2023-02-27")),
+                    employeeId: empId,
+                    afternoonShift: {
+                        reason: "Update System",
+                        attendance: "Permission",
+                    },
+                }).save();
             }
             catch (error) {
                 return error;
