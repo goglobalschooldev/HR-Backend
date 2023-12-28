@@ -91,11 +91,12 @@ const EvaluationResolver = {
             try {
                 const getEvaluations = await Evaluation_1.EmployeeEvaluate.findById(evaluationId).populate("commentsBy.user");
                 const commentsBy = getEvaluations.commentsBy.map(user => {
+                    console.log(user);
                     return {
                         _id: user._id,
                         text: user.text,
-                        userName: commentsBy?.user?.lanitnName,
-                        userSrc: commentsBy?.user?.profileImage,
+                        userName: user?.user?.latinName,
+                        userSrc: user?.user?.profileImage,
                         date: user.date
                     };
                 });

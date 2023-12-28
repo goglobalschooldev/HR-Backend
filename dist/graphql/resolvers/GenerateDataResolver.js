@@ -12,7 +12,7 @@ const generate = {
     Query: {
         generateData: async (_root) => {
             try {
-                const empId = new mongoose_1.default.Types.ObjectId("634f9fee28216566b49361f2");
+                const empId = new mongoose_1.default.Types.ObjectId("638080a8a6625c305300c340");
                 const getAttmorningShift = await Attendance_1.default.aggregate([
                     { $match: { employeeId: empId } },
                     { $match: { "morningShift.attendance": "Permission" } },
@@ -32,14 +32,23 @@ const generate = {
                 }));
                 console.log(data.sort());
                 console.log(data.length / 2);
-                await new Attendance_1.default({
-                    attendanceDate: (0, currentDate_1.currentDate)(new Date("2023-02-27")),
-                    employeeId: empId,
-                    afternoonShift: {
-                        reason: "Update System",
-                        attendance: "Permission",
-                    },
-                }).save();
+                const dates = [
+                    "2023-01-08",
+                ];
+                dates.map(async (date) => {
+                    await new Attendance_1.default({
+                        attendanceDate: (0, currentDate_1.currentDate)(new Date(date)),
+                        employeeId: empId,
+                        morningShift: {
+                            reason: "Update System",
+                            attendance: "Permission",
+                        },
+                        afternoonShift: {
+                            reason: "Update System",
+                            attendance: "Permission",
+                        },
+                    }).save();
+                });
             }
             catch (error) {
                 return error;

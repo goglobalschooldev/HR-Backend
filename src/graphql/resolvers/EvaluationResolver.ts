@@ -106,12 +106,12 @@ const EvaluationResolver = {
                 const getEvaluations = await EmployeeEvaluate.findById(evaluationId).populate("commentsBy.user");
 
                 const commentsBy: any = getEvaluations.commentsBy.map(user => {
-                    // console.log(user.user);
+                    console.log(user);
                     return {
                         _id: user._id,
                         text: user.text,
-                        userName: commentsBy?.user?.lanitnName,
-                        userSrc: commentsBy?.user?.profileImage,
+                        userName: user?.user?.latinName,
+                        userSrc: user?.user?.profileImage,
                         date: user.date
                     }
                 });
