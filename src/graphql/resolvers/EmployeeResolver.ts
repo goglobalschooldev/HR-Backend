@@ -86,8 +86,32 @@ const EmployeeResolver = {
         },
         getEmployeeById: async (_root: undefined, { _id }: { _id: string }) => {
             try {
-                const getEmployee = await Employee.findById(_id);
-                return getEmployee;
+                const getEmployee = await Employee.findById(_id).populate("branch");
+                // return getEmployee;
+                return {
+                    _id: getEmployee?._id,
+                    nationalId: getEmployee?.nationalId,
+                    employeeId: getEmployee?.employeeId,
+                    firstName: getEmployee?.firstName,
+                    lastName: getEmployee?.lastName,
+                    latinName: getEmployee?.latinName,
+                    gender: getEmployee?.gender,
+                    profileImage: getEmployee?.profileImage,
+                    joinDate: getEmployee?.joinDate,
+                    dob: getEmployee?.dob,
+                    workingStatus: getEmployee?.workingStatus,
+                    placeOfBirth: getEmployee?.placeOfBirth,
+                    nationality: getEmployee?.nationality,
+                    tell: getEmployee?.tell,
+                    email: getEmployee?.email,
+                    type: getEmployee?.type,
+                    currentAddress: getEmployee?.currentAddress,
+                    branch: getEmployee?.branch?.branchName,
+                    branchId: getEmployee?.branch?._id,
+                    marital: getEmployee?.marital,
+                    workBook: getEmployee?.workBook
+                }
+
             } catch (error) {
                 return error
             }

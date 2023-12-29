@@ -141,6 +141,7 @@ const attendanceResolver = {
                         profileImage: employee?.profileImage,
                         latinName: employee?.latinName,
                         presence,
+                        lateDuration: shift === "morning" ? getAttendance?.morningShift?.late : getAttendance?.afternoonShift?.late,
                         attendance: shift === "morning" ? morningAttendance : afternoonAttendance,
                         fine: shift === "morning" ? getAttendance?.morningShift?.fine || 0 : getAttendance?.afternoonShift?.fine || 0,
                         reason: shift === "morning" ? getAttendance?.morningShift?.reason : getAttendance?.afternoonShift?.reason

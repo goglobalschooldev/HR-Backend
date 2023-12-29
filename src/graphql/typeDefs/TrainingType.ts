@@ -11,6 +11,18 @@ const TrainingType = `#graphql
         description: String
         status: String
     }  
+    type Question {
+        _id: ID
+        question: String
+        type: String
+        multiple: [String]
+        singular: String
+    }
+    enum AllowType {
+            All
+            multiple
+            singular
+        }
     type TrainingGuest {
         _id: ID
         firstName: String
@@ -86,6 +98,9 @@ const TrainingType = `#graphql
         getGuestRegisterwithPagination(page: Int!, limit: Int!,keyword: String!, trainingId: ID!,evaluation: Boolean!): TrainingGuestPaginator!
         getGeustLogin(trainingId: ID!, email: String!): ID!
         getEvaluationTrainingByGuest(guestId: ID!): [EvaluationTrainingByGuest]!
+
+        getQuestions(keyword: String!,type: String!): [Question]!
+        getQuestionsByTraining(trainingId: ID!): [Question]!
     }
     type Mutation {
         createTraining(input: createTrainingInput!): Message!
@@ -100,6 +115,12 @@ const TrainingType = `#graphql
         deleteGuestRegister(_id: ID!): Message!
         guestValuation(email: String!,trainingId: ID!, input: [valuationsInput]!): Message!
         checkGuestAttendance(guestId: ID!,status: AllowStatusGuestAttendance! ): Message!
+
+        # Question =========================================    
+        createQuestion(question: String, type: String, multiple: [String]): Message!
+        updateQuestion(_id: String, question: String, type: String, multiple: [String]): Message!
+        deleteQuestion(_id: String): Message!
+        addTrainingQuestion(trainingId: ID!, questions:[ID]!): Message!
     }
 `;
 

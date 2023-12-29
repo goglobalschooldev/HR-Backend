@@ -16,86 +16,84 @@ const generate = {
     Query: {
         generateData: async (_root: undefined) => {
             try {
-                const empId = new mongoose.Types.ObjectId("638080a8a6625c305300c340")
-                const getAttmorningShift = await Attendance.aggregate([
-                    { $match: { employeeId: empId } },
-                    { $match: { "morningShift.attendance": "Permission" } },
-                ]);
-                const getAttafternoonShift = await Attendance.aggregate([
-                    { $match: { employeeId: empId } },
-                    { $match: { "afternoonShift.attendance": "Permission" } },
-                ]);
+                // const empId = new mongoose.Types.ObjectId("6360c71182da276b1b9af7ac")
+                // const getAttmorningShift = await Attendance.aggregate([
+                //     { $match: { employeeId: empId } },
+                //     { $match: { "morningShift.attendance": "Permission" } },
+                // ]);
+                // const getAttafternoonShift = await Attendance.aggregate([
+                //     { $match: { employeeId: empId } },
+                //     { $match: { "afternoonShift.attendance": "Permission" } },
+                // ]);
 
-                const getAttmorningShiftId = getAttmorningShift.map(da => da._id.toString())
-                const getAttafternoonShiftId = getAttafternoonShift.map(da => da._id.toString())
-                const totalID = [...getAttafternoonShiftId, ...getAttmorningShiftId]
-                const reDuplicates = removeDuplicates(totalID);
-                const data = await Promise.all(reDuplicates.map(async (permision: string) => {
-                    const getAtt = await Attendance.findById(permision);
+                // const getAttmorningShiftId = getAttmorningShift.map(da => da._id.toString())
+                // const getAttafternoonShiftId = getAttafternoonShift.map(da => da._id.toString())
+                // const totalID = [...getAttafternoonShiftId, ...getAttmorningShiftId]
+                // const reDuplicates = removeDuplicates(totalID);
+                // const data = await Promise.all(reDuplicates.map(async (permision: string) => {
+                //     const getAtt = await Attendance.findById(permision);
 
-                    let attendanceDate = moment(getAtt?.attendanceDate).format('MMM');
-                    return attendanceDate
-                }))
-                console.log(data.sort());
-                // console.log(totalID.length / 2);
-                console.log(data.length / 2);
+                //     let attendanceDate = moment(getAtt?.attendanceDate).format('MMM');
+                //     return attendanceDate
+                // }))
+                // console.log(data.sort());
+                // // console.log(totalID.length / 2);
+                // console.log(data.length / 2);
 
-
-                // const att = await Attendance.findOneAndUpdate({
-                //     attendanceDate: currentDate(new Date("2023-09-17")),
-                //     employeeId: empId
-                // }, {
-                //     morningShift: {
-                //         reason: "Update System",
-                //         attendance: "Permission",
-                //     },
-                //     afternoonShift: {
-                //         reason: "Update System",
-                //         attendance: "Permission",
-                //     },
-                // })
-                // console.log(att);
-                const dates = [
-                    // "2023-01-05",
-                    // "2023-01-07",
-                    "2023-01-08",
-                    // "2023-02-05",
-                    // "2023-02-09",
-                    // "2023-02-12",
-                    // "2023-03-05",
-                    // "2023-04-17",
-                    // "2023-05-19",
+                // // const att = await Attendance.findOneAndUpdate({
+                // //     attendanceDate: currentDate(new Date("2023-09-17")),
+                // //     employeeId: empId
+                // // }, {
+                // //     morningShift: {
+                // //         reason: "Update System",
+                // //         attendance: "Permission",
+                // //     },
+                // //     afternoonShift: {
+                // //         reason: "Update System",
+                // //         attendance: "Permission",
+                // //     },
+                // // })
+                // // console.log(att);
+                // const dates = [
+                //     "2023-01-07",
+                //     "2023-01-08",
+                //     // "2023-02-05",
+                //     // "2023-02-09",
+                //     // "2023-02-12",
+                //     // "2023-03-05",
+                //     // "2023-04-17",
+                //     // "2023-05-19",
                     
-                    // "2023-04-05",
-                    // "2023-09-13",
-                    // "2023-04-08",
-                    // "2023-04-05",
-                    // "2023-05-09",
-                    // "2023-06-12",
-                    // "2023-04-25",
-                    // "2023-04-22",
-                    // "2023-07-04",
-                ]
-                dates.map(async (date: string) => {
-                    // await Attendance.findOneAndDelete({
-                    //     attendanceDate: currentDate(new Date(date)),
-                    //     employeeId: empId,
+                //     // "2023-04-05",
+                //     // "2023-09-13",
+                //     // "2023-04-08",
+                //     // "2023-05-09",
+                //     // "2023-06-12",
+                //     // "2023-04-25",
+                //     // "2023-04-22",
+                //     // "2023-07-04",
+                // ]
+                // dates.map(async (date: string) => {
+                //     // await Attendance.findOneAndDelete({
+                //     //     attendanceDate: currentDate(new Date(date)),
+                //     //     employeeId: empId,
                       
-                    // });
+                //     // });
 
-                    await new Attendance({
-                        attendanceDate: currentDate(new Date(date)),
-                        employeeId: empId,
-                        morningShift: {
-                            reason: "Update System",
-                            attendance: "Permission",
-                        },
-                        afternoonShift: {
-                            reason: "Update System",
-                            attendance: "Permission",
-                        },
-                    }).save()
-                })
+                //     await new Attendance({
+                //         attendanceDate: currentDate(new Date(date)),
+                //         employeeId: empId,
+                //         morningShift: {
+                //             reason: "Update System",
+                //             attendance: "Permission",
+                //         },
+                //         afternoonShift: {
+                //             reason: "Update System",
+                //             attendance: "Permission",
+                //         },
+                //     }).save()
+
+                // })
 
 
 

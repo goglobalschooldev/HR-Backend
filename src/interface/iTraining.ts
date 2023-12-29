@@ -22,3 +22,25 @@ export interface iQuestion {
     singular: string;
     createdAt: Date;
 }
+
+export interface iTrainingGuest {
+    _id: ObjectId;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    position: string;
+    from: string;
+    tell: string;
+    email: string;
+    expectation: string;
+    trainingId: iTraining
+    valuation: [iValuationTrainingQuestion]
+    attendance: string;
+    createdAt: Date;
+}
+
+interface iValuationTrainingQuestion {
+    questionId: iQuestion
+    answer: string;
+}
+// "", "L", "C", "A", "P"

@@ -46,6 +46,7 @@ const AttendanceType = `#graphql
       profileImage: String
       latinName: String
       attendance: String
+      lateDuration: String
       fine: Int
       reason: String
     }
