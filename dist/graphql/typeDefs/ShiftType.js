@@ -6,7 +6,8 @@ const GlobalType = `#graphql
         from: Date
         to: Date
         reason: String
-        timeOff: String
+        shiftOff: String
+        typeShiftOff: String
         requestBy: String
         approveBy: String
         cancelBy: String

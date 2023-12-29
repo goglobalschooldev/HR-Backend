@@ -33,7 +33,7 @@ const shiftSchema = new mongoose_1.Schema({
     to: Date,
     shiftOff: String,
     reason: String,
-    timeOff: { type: mongoose_1.default.Types.ObjectId, ref: 'publicHolidays' },
+    timeOff: { type: mongoose_1.default.Types.ObjectId, ref: 'employeePublicHolidays' },
     requestBy: { type: mongoose_1.default.Types.ObjectId, ref: 'employees' },
     approveBy: { type: mongoose_1.default.Types.ObjectId, ref: 'employees' },
     approveStatus: { type: String, default: "pending" },

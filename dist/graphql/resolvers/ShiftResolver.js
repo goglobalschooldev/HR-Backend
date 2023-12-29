@@ -44,7 +44,7 @@ const ShiftResolver = {
                     limit: limit || 10,
                     customLabels: paginationLabel_1.paginationLabel,
                     pagination: true,
-                    populate: "timeOff requestBy cancelBy approveBy",
+                    populate: "requestBy cancelBy approveBy",
                     sort: { createdAt: -1 }
                 };
                 const fromQuery = from.length === 0 ? {} : {
@@ -70,13 +70,15 @@ const ShiftResolver = {
                     ]
                 };
                 const getShift = await Shift_1.default.paginate(query, options);
-                const data = getShift?.data?.map((data) => {
+                const data = await Promise.all(getShift?.data?.map(async (data) => {
+                    const getTypeShiftOff = await EmployeePublicHoliday_1.default.findById(data?.timeOff).populate("title");
                     return {
                         _id: data?._id,
                         from: data?.from,
                         to: data?.to,
                         reason: data?.reason,
-                        timeOff: data?.shiftOff,
+                        shiftOff: data?.shiftOff,
+                        typeShiftOff: getTypeShiftOff?.title?.publicHoliday,
                         requestBy: data?.requestBy?.latinName,
                         approveBy: data?.approveBy?.latinName,
                         cancelBy: data?.cancelBy?.latinName,
@@ -86,7 +88,7 @@ const ShiftResolver = {
                         hrComment: data?.hrComment,
                         requestAt: `${(0, currentDate_1.currentDate)(data?.createdAt)},${data?.requestAt}`
                     };
-                });
+                }));
                 return {
                     data,
                     paginator: getShift.paginator

@@ -7,7 +7,7 @@ const shiftSchema = new Schema<iShift>({
     to: Date,
     shiftOff: String,
     reason: String,
-    timeOff: { type: mongoose.Types.ObjectId, ref: 'publicHolidays' },
+    timeOff: { type: mongoose.Types.ObjectId, ref: 'employeePublicHolidays' },
     requestBy: { type: mongoose.Types.ObjectId, ref: 'employees' },
     approveBy: { type: mongoose.Types.ObjectId, ref: 'employees' },
     approveStatus: { type: String ,default:"pending"},
