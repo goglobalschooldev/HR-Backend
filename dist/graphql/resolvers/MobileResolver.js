@@ -91,6 +91,7 @@ const MobileResolver = {
                     let from = (0, moment_1.default)(data?.to).format('DD MMM YY');
                     return {
                         _id: data?._id,
+                        timeOff: data?.shiftOff,
                         profileImage: data?.requestBy?.profileImage,
                         latinName: data?.requestBy?.latinName,
                         reason: data?.reason,
@@ -211,7 +212,7 @@ const MobileResolver = {
                 if (!auchCheck.status) {
                     return new Error(auchCheck.message);
                 }
-                const data = await Notification_1.default.find({ forUser: { $elemMatch: { $in: auchCheck?.user?.user_id?.toString() } } }).limit(limit);
+                const data = await Notification_1.default.find({ forUser: { $elemMatch: { $in: auchCheck?.user?.user_id?.toString() } } }).limit(limit).sort({ createdAt: -1 });
                 return data;
             }
             catch (error) {

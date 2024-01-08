@@ -10,7 +10,6 @@ import { currentDate } from '../../fn/currentDate';
 import AuthAdmin from '../../auth/AuthAdmin';
 import EmployeePublicHoliday from '../../models/EmployeePublicHoliday';
 import { iEmployeePublicHoliday } from '../../interface/iEmployee';
-import { countTotalArray } from '../../fn/countTotalArray';
 import moment from 'moment';
 import { iShift } from '../../interface/iShift';
 import Notification from '../../models/Notification';
@@ -87,13 +86,14 @@ const MobileResolver = {
                     from: { $gte: new Date(currentDate()) },
                     approveStatus: "approve"
                 }).sort({ from: 1 }).populate("timeOff requestBy cancelBy approveBy");
-                const data = geShifts.map((data) => {
+                const data = geShifts.map((data: iShift) => {
                     let f = moment(data?.from).format('DD');
                     let t = moment(data?.to).format('DD');
                     let to = moment(data?.to).format('DD MMM YY');
                     let from = moment(data?.to).format('DD MMM YY');
                     return {
                         _id: data?._id,
+                        timeOff: data?.shiftOff,
                         profileImage: data?.requestBy?.profileImage,
                         latinName: data?.requestBy?.latinName,
                         reason: data?.reason,
@@ -181,7 +181,7 @@ const MobileResolver = {
                         },
                     ]
                 });
-             
+
 
                 return {
                     al: getAl?.totalDay - permission,
@@ -228,7 +228,7 @@ const MobileResolver = {
                     return new Error(auchCheck.message);
                 }
 
-                const data = await Notification.find({ forUser: { $elemMatch: { $in: auchCheck?.user?.user_id?.toString() } } }).limit(limit)
+                const data = await Notification.find({ forUser: { $elemMatch: { $in: auchCheck?.user?.user_id?.toString() } } }).limit(limit).sort({ createdAt: -1 })
 
                 return data
             } catch (error) {

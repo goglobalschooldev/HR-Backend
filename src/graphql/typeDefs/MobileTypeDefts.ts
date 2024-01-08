@@ -4,10 +4,11 @@ const MobileTypeDefts = `#graphql
         latinName: String
         position: String
     }
-    type EmployeeOnHoliday{
+    type EmployeeOnHoliday {
         _id: ID
         profileImage: String
         latinName: String
+        timeOff: String
         reason: String
         dateLeave: String
     }

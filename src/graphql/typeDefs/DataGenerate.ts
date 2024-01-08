@@ -2,7 +2,7 @@
 const DataGenerate = `#graphql
 
     type Query {
-        generateData: Message!
+        generateData(id:ID): Message!
     } 
 `;
 

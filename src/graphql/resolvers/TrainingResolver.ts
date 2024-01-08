@@ -105,7 +105,7 @@ const trainingResolver = {
                 return error
             }
         },
-        // Questions ===============================
+        // Questions ============================================
         getQuestions: async (_root: undefined, { keyword, type }: { keyword: string, type: string }) => {
             try {
                 const typeQuery = type === "All" ? {} : { type }
@@ -129,7 +129,6 @@ const trainingResolver = {
                 return error
             }
         }
-
     },
     Mutation: {
         createTraining: async (_root: undefined, { input }: { input: iTraining }) => {
